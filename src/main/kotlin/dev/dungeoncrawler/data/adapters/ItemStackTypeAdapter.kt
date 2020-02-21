@@ -1,4 +1,4 @@
-package dev.dungeoncrawler.data
+package dev.dungeoncrawler.data.adapters
 
 import com.google.gson.*
 import dev.reeve.quests.item
