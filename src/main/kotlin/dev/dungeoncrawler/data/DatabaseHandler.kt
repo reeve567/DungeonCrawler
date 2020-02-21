@@ -1,4 +1,4 @@
-package dev.dungeoncrawler
+package dev.dungeoncrawler.data
 
 import com.mongodb.*
 import org.bson.Document
