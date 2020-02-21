@@ -18,16 +18,15 @@ class DatabaseHandler {
 	val id = "767676"
 
 	init {
-		val query = BasicDBObject()
-		query.put("id", id)
-
-		if (players.find(query).cursor().hasNext()) {
-			System.out.println(players.find(query).cursor().next())
+		if (hasPlayersDocument(id)) {
+			System.out.println(getPlayersDocument(id)!!["name"])
 		} else {
-			val document = BasicDBObject()
+			System.out.println("rurururur")
+			val document = Document()
 			document.put("id", id)
 			document.put("name", "test_object")
 			document.put("value", 70000)
+			players.insertOne(document)
 		}
 	}
 
