@@ -32,7 +32,7 @@ class DatabaseHandler {
 	fun getPlayersDocument(id: String): Document? {
 		val query = BasicDBObject()
 		query["id"] = id
-		return players.find(query).cursor().tryNext()
+		return players.find(query).noCursorTimeout(true).first()
 	}
 
 	fun hasPlayersDocument(id: String): Boolean {
@@ -45,9 +45,9 @@ class DatabaseHandler {
 		return obj
 	}
 
-	fun insertOrUpdatePlayers(id: String, document: Document) {
+	fun insertOrReplacePlayers(id: String, document: Document) {
 		if (hasPlayersDocument(id)) {
-			players.updateOne(getQuery(id), document)
+			players.replaceOne(getQuery(id), document)
 		} else {
 			players.insertOne(document)
 		}

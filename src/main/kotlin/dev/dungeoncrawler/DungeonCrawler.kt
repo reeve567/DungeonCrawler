@@ -8,16 +8,34 @@ import org.bukkit.plugin.java.JavaPlugin
 class DungeonCrawler : JavaPlugin() {
 	val playerDataManager = PlayerDataManager()
 
-	override fun onEnable() {
+	init {
+		instance = this
+	}
 
+	companion object {
+		lateinit var instance: DungeonCrawler
+	}
+
+	override fun onEnable() {
 		register(
-				JoinListener(playerDataManager)
+				JoinLeaveHandler(playerDataManager),
+				BankHandler(playerDataManager)
 		)
+
+		Bukkit.getOnlinePlayers().forEach {
+			playerDataManager.load(it.uniqueId, it.name)
+		}
 	}
 
 	private fun register(vararg listener: Listener) {
 		listener.forEach {
 			Bukkit.getPluginManager().registerEvents(it, this)
+		}
+	}
+
+	override fun onDisable() {
+		Bukkit.getOnlinePlayers().forEach {
+			playerDataManager.saveAndRemove(it.uniqueId)
 		}
 	}
 }

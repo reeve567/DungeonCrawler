@@ -1,13 +1,13 @@
 package dev.dungeoncrawler.data
 
-class BankData(private val pagesSerialized: HashMap<Int, HashMap<Int, Map<String, Any>>>? = null) {
+class BankData(private val pagesSerialized: Map<String, Map<String, Map<String, Any>>>? = null) {
 
 	var pages: HashMap<Int, BankPageData> = HashMap()
 
 	init {
 		if (pagesSerialized != null) {
 			for (entry in pagesSerialized) {
-				pages[entry.key] = BankPageData(entry.value)
+				pages[Integer.valueOf(entry.key)] = BankPageData(entry.value)
 			}
 		} else {
 			pages[1] = BankPageData()
@@ -18,10 +18,10 @@ class BankData(private val pagesSerialized: HashMap<Int, HashMap<Int, Map<String
 		}
 	}
 
-	fun serialize(): HashMap<Int, HashMap<Int, Map<String, Any>>> {
-		val hash = HashMap<Int, HashMap<Int, Map<String, Any>>>()
+	fun serialize(): HashMap<String, HashMap<String, Map<String, Any>>> {
+		val hash = HashMap<String, HashMap<String, Map<String, Any>>>()
 		for (entry in pages) {
-			hash[entry.key] = entry.value.serialize()
+			hash[entry.key.toString()] = entry.value.serialize()
 		}
 		return hash
 	}
