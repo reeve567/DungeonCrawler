@@ -17,7 +17,7 @@ class BankHandler(private val playerDataManager: PlayerDataManager) : Listener {
 				playerDataManager.playerData[e.player.uniqueId]?.also {
 					it.bankData.pages[1]?.openPage(e.player)
 				}
-				e.player.playSound(e.clickedBlock.location, Sound.CHEST_OPEN, 1f, 1f)
+				e.player.playSound(e.clickedBlock.location, Sound.CHEST_OPEN, .5f, .35f)
 			}
 		}
 	}
