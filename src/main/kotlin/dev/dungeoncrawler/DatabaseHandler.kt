@@ -1,0 +1,43 @@
+package dev.dungeoncrawler
+
+import com.mongodb.*
+import org.bson.Document
+
+fun main() {
+	DatabaseHandler()
+}
+
+class DatabaseHandler {
+	private val host = "reeve.eastus2.cloudapp.azure.com"
+	private val port = 27017
+
+	private val client = MongoClient(ServerAddress(host, port), MongoCredential.createCredential("admin", "admin", "rmc1124Erin!".toCharArray()), MongoClientOptions.builder().build())
+	private val database = client.getDatabase("test")
+	private val players = database.getCollection("players")
+
+	val id = "767676"
+
+	init {
+		val query = BasicDBObject()
+		query.put("id", id)
+
+		if (players.find(query).cursor().hasNext()) {
+
+		} else {
+			val document = BasicDBObject()
+			document.put("id", id)
+			document.put("name", "test_object")
+			document.put("value", 70000)
+		}
+	}
+
+	fun getPlayersDocument(id: String): Document? {
+		val query = BasicDBObject()
+		query.put("id", id)
+		return players.find(query).cursor().tryNext()
+	}
+
+	fun hasPlayersDocument(id: String): Boolean {
+		return getPlayersDocument(id) != null
+	}
+}

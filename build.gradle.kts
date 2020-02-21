@@ -17,6 +17,9 @@ dependencies {
     implementation(kotlin("stdlib"))
     implementation(kotlin("reflect"))
     implementation(kotlin("test-junit"))
+
+    implementation("org.mongodb","mongo-java-driver","3.12.1")
+
     compileOnly("org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT")
 }
 
