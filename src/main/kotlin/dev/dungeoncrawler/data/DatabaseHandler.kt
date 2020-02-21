@@ -22,20 +22,34 @@ class DatabaseHandler {
 			System.out.println(getPlayersDocument(id)!!["name"])
 		} else {
 			val document = Document()
-			document.put("id", id)
-			document.put("name", "test_object")
-			document.put("value", 70000)
+			document["id"] = id
+			document["name"] = "test_object"
+			document["value"] = 70000
 			players.insertOne(document)
 		}
 	}
 
 	fun getPlayersDocument(id: String): Document? {
 		val query = BasicDBObject()
-		query.put("id", id)
+		query["id"] = id
 		return players.find(query).cursor().tryNext()
 	}
 
 	fun hasPlayersDocument(id: String): Boolean {
 		return getPlayersDocument(id) != null
+	}
+
+	private fun getQuery(id: String): BasicDBObject {
+		val obj = BasicDBObject()
+		obj["id"] = id
+		return obj
+	}
+
+	fun insertOrUpdatePlayers(id: String, document: Document) {
+		if (hasPlayersDocument(id)) {
+			players.updateOne(getQuery(id), document)
+		} else {
+			players.insertOne(document)
+		}
 	}
 }
