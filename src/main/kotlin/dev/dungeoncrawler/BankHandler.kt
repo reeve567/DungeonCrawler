@@ -2,6 +2,7 @@ package dev.dungeoncrawler
 
 import dev.dungeoncrawler.data.PlayerDataManager
 import org.bukkit.Material
+import org.bukkit.Sound
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.Action
@@ -16,6 +17,7 @@ class BankHandler(private val playerDataManager: PlayerDataManager) : Listener {
 				playerDataManager.playerData[e.player.uniqueId]?.also {
 					it.bankData.pages[1]?.openPage(e.player)
 				}
+				e.player.playSound(e.clickedBlock.location, Sound.CHEST_OPEN, 1f, 1f)
 			}
 		}
 	}

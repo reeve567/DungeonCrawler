@@ -5,24 +5,7 @@ import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 
-class BankPageData(itemsSerialized: Map<String, Map<String, Any>>? = null) {
-	var items = HashMap<Int, ItemStack>()
-
-	init {
-		itemsSerialized?.also {
-			for (entry in itemsSerialized) {
-				items[Integer.valueOf(entry.key)] = ItemStack.deserialize(entry.value)
-			}
-		}
-	}
-
-	fun serialize(): HashMap<String, Map<String, Any>> {
-		val hash = HashMap<String, Map<String, Any>>()
-		for (entry in items) {
-			hash[entry.key.toString()] = entry.value.serialize()
-		}
-		return hash
-	}
+class BankPageData(var items: HashMap<Int, ItemStack> = HashMap()) {
 
 	fun openPage(player: Player) {
 		gui {

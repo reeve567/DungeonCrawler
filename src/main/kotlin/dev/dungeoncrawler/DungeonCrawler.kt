@@ -1,5 +1,6 @@
 package dev.dungeoncrawler
 
+import dev.dungeoncrawler.data.ConfigurationManager
 import dev.dungeoncrawler.data.PlayerDataManager
 import org.bukkit.Bukkit
 import org.bukkit.event.Listener
@@ -7,6 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin
 
 class DungeonCrawler : JavaPlugin() {
 	val playerDataManager = PlayerDataManager()
+	val configurationManager = ConfigurationManager(playerDataManager, dataFolder)
 
 	init {
 		instance = this
@@ -21,10 +23,6 @@ class DungeonCrawler : JavaPlugin() {
 				JoinLeaveHandler(playerDataManager),
 				BankHandler(playerDataManager)
 		)
-
-		Bukkit.getOnlinePlayers().forEach {
-			playerDataManager.load(it.uniqueId, it.name)
-		}
 	}
 
 	private fun register(vararg listener: Listener) {
@@ -34,8 +32,6 @@ class DungeonCrawler : JavaPlugin() {
 	}
 
 	override fun onDisable() {
-		Bukkit.getOnlinePlayers().forEach {
-			playerDataManager.saveAndRemove(it.uniqueId)
-		}
+		configurationManager.save()
 	}
 }

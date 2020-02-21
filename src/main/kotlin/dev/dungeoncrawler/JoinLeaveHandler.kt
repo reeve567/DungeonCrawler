@@ -11,12 +11,10 @@ class JoinLeaveHandler(private val playerDataManager: PlayerDataManager) : Liste
 	@EventHandler
 	fun onPlayerJoin(e: PlayerJoinEvent) {
 		e.joinMessage = "§6${e.player.name} §7has joined the game."
-		playerDataManager.load(e.player.uniqueId, e.player.name)
 	}
 
 	@EventHandler
 	fun onPlayerLeave(e: PlayerQuitEvent) {
 		e.quitMessage = "§6${e.player.name} §7has left the game."
-		playerDataManager.saveAndRemove(e.player.uniqueId)
 	}
 }
