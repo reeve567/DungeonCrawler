@@ -1,0 +1,6 @@
+main: dev.dungeoncrawler.DungeonCrawlerKt
+name: DungeonCrawler
+version: 1.0-SNAPSHOT
+authors:
+  - Xwy
+  - ImUnsmart

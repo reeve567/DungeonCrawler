@@ -22,7 +22,7 @@ class DatabaseHandler {
 		query.put("id", id)
 
 		if (players.find(query).cursor().hasNext()) {
-
+			System.out.println(players.find(query).cursor().next())
 		} else {
 			val document = BasicDBObject()
 			document.put("id", id)
