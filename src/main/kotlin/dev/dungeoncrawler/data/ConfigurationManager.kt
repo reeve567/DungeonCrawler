@@ -2,6 +2,7 @@ package dev.dungeoncrawler.data
 
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
+import dev.dungeoncrawler.data.adapters.ItemStackTypeAdapter
 import org.bukkit.inventory.ItemStack
 import java.io.File
 import java.util.*
@@ -12,7 +13,7 @@ class ConfigurationManager(private val playerDataManager: PlayerDataManager, dat
 	private val balancesFile = File(dataFolder, "balances.json")
 	private val bankFile = File(dataFolder, "bankData.json")
 
-	private val gson = GsonBuilder().setPrettyPrinting().registerTypeAdapter(ItemStack::class.java, ItemStackTypeAdapter()).create()
+	private val gson = GsonFactory.prettyGson!!
 
 	init {
 		if (playerDataFile.exists()) {
