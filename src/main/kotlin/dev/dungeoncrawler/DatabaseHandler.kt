@@ -21,7 +21,6 @@ class DatabaseHandler {
 		if (hasPlayersDocument(id)) {
 			System.out.println(getPlayersDocument(id)!!["name"])
 		} else {
-			System.out.println("rurururur")
 			val document = Document()
 			document.put("id", id)
 			document.put("name", "test_object")
