@@ -1,4 +1,4 @@
-main: dev.dungeoncrawler.DungeonCrawlerKt
+main: dev.dungeoncrawler.DungeonCrawler
 name: DungeonCrawler
 version: 1.0-SNAPSHOT
 authors:

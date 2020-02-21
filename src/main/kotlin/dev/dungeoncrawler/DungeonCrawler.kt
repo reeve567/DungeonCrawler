@@ -10,7 +10,9 @@ class DungeonCrawler : JavaPlugin() {
 
 	override fun onEnable() {
 
-		register(JoinListener(playerDataManager))
+		register(
+				JoinListener(playerDataManager)
+		)
 	}
 
 	private fun register(vararg listener: Listener) {
