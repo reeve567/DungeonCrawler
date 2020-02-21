@@ -17,4 +17,10 @@ class Dungeon(val dc : DungeonCrawler) {
             floor?.createRoom(0, 0);
         }
     }
+
+    fun destroy() {
+        for(floor in floors) {
+            floor?.destroy()
+        }
+    }
 }

@@ -36,5 +36,6 @@ class DungeonCrawler : JavaPlugin() {
 
 	override fun onDisable() {
 		configurationManager.save()
+		dungeon.destroy()
 	}
 }

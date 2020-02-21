@@ -13,6 +13,13 @@ class Floor(val dungeon: Dungeon, val maxRooms: Int) {
     init {
     }
 
+    fun destroy() {
+        for(room in rooms) {
+            room.destroy()
+        }
+        rooms.clear()
+    }
+
     fun createRoom(x: Int, z: Int) {
         if (rooms.size >= maxRooms)
             return;
