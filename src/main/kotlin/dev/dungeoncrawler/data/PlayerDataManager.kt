@@ -7,6 +7,6 @@ import kotlin.collections.HashMap
 class PlayerDataManager {
 
 	var playerData: HashMap<UUID, PlayerData> = HashMap()
-	var marketItems = HashMap<UUID, ArrayList<Triple<Date, Double, ItemStack>>>()
+	var marketItems = HashMap<UUID, ArrayList<Triple<Date, Pair<Double, Boolean>, ItemStack>>>()
 
 }

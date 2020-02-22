@@ -7,7 +7,6 @@ import java.util.*
 class ConfigurationManager(private val playerDataManager: PlayerDataManager, dataFolder: File) {
 
 	private val playerDataFile = File(dataFolder, "playerData.json")
-
 	private val gson = GsonFactory.prettyGson!!
 
 	init {
