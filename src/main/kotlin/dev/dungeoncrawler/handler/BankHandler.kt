@@ -1,4 +1,4 @@
-package dev.dungeoncrawler
+package dev.dungeoncrawler.handler
 
 import dev.dungeoncrawler.data.PlayerDataManager
 import org.bukkit.Material

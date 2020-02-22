@@ -1,4 +1,4 @@
-package dev.dungeoncrawler
+package dev.dungeoncrawler.handler
 
 import dev.dungeoncrawler.data.BankData
 import dev.dungeoncrawler.data.MarketData
