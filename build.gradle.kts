@@ -27,12 +27,12 @@ task("testAndJar") {
     tasks.findByName("shadowJar")!!.mustRunAfter("test")
 }
 
-configure<JavaPluginConvention> {
-    sourceCompatibility = JavaVersion.VERSION_1_8
+tasks.register<Copy>("devin") {
+    dependsOn("shadowJar")
+    from(file("$buildDir/libs/DungeonCrawler-1.0-SNAPSHOT-all.jar"))
+    to(file("somepath"))
 }
 
-tasks {
-    shadowJar {
-        
-    }
+configure<JavaPluginConvention> {
+    sourceCompatibility = JavaVersion.VERSION_1_8
 }
