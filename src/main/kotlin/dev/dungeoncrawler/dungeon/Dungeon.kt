@@ -14,7 +14,7 @@ class Dungeon(val dc : DungeonCrawler) {
 
     fun generate() {
         for(floor in floors) {
-            floor?.createRoom(0, 0);
+            floor?.createRooms()
         }
     }
 

@@ -12,7 +12,7 @@ import org.bukkit.plugin.java.JavaPlugin
 class DungeonCrawler : JavaPlugin() {
 	private val playerDataManager = PlayerDataManager()
 	private val configurationManager = ConfigurationManager(playerDataManager, dataFolder)
-	private val dungeon = Dungeon(this)
+	private var dungeon : Dungeon? = null
 
 	init {
 		instance = this
@@ -27,7 +27,8 @@ class DungeonCrawler : JavaPlugin() {
 				JoinLeaveHandler(playerDataManager),
 				BankHandler(playerDataManager)
 		)
-		dungeon.generate()
+		dungeon = Dungeon(this)
+		dungeon!!.generate()
 	}
 
 	private fun register(vararg listener: Listener) {
@@ -38,6 +39,6 @@ class DungeonCrawler : JavaPlugin() {
 
 	override fun onDisable() {
 		configurationManager.save()
-		dungeon.destroy()
+		dungeon?.destroy()
 	}
 }

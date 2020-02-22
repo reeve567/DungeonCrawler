@@ -3,58 +3,94 @@ package dev.dungeoncrawler.dungeon
 import dev.dungeoncrawler.Constants
 import org.bukkit.Bukkit
 import org.bukkit.World
+import kotlin.random.Random
+import kotlin.random.nextInt
 
 class Floor(val dungeon: Dungeon, val maxRooms: Int) {
 
+	val world: World = Bukkit.getWorld("world")
+	private val rooms: ArrayList<Room> = ArrayList()
 
-    val world: World = Bukkit.getWorld("world")
-    private val rooms: ArrayList<Room> = ArrayList()
+	fun destroy() {
+		for (room in rooms) {
+			room.destroy()
+		}
+		rooms.clear()
+	}
 
-    init {
-    }
+	// devote themselves to a direction and make most chance go to straight
+	// maybe pass on chance value and make it smaller if it's going in another direction from straight
 
-    fun destroy() {
-        for(room in rooms) {
-            room.destroy()
-        }
-        rooms.clear()
-    }
+	// generate in squares
+	// first square of 8 - generate 6
+	// second square of 18 - generate 10 & keep generating if not next to one in first square yet
+	// etc
 
-    fun createRoom(x: Int, z: Int) {
-        if (rooms.size >= maxRooms)
-            return;
-        val pfbIndex: Int = (Math.random() * (Constants.PREFAB_SIZE * Constants.PREFAB_SIZE)).toInt()
-        val r = Room(this, x, z, pfbIndex)
-        r.create()
-        rooms.add(r)
-        val chance: Double = 1 - ((rooms.size.toDouble() / maxRooms / 4.0) / 2.0)
+	fun createRooms() {
+		val rooms = HashMap<Pair<Int, Int>, Room>()
+		rooms[Pair(0, 0)] = createRoom(0, 0, 0)
+		fun create(roomsSize: Int, squareSize: Int) {
+			if (rooms.size != 1)
+				rooms.clear()
+			while (rooms.size < roomsSize) {
+				val x = Random.nextInt(IntRange(-squareSize, squareSize))
+				val z = Random.nextInt(IntRange(-squareSize, squareSize))
+				if (x == -squareSize || x == squareSize) {
+					if (!rooms.containsKey(Pair(x, z)))
+						rooms[Pair(x, z)] = createRoom(x, z, roomsSize * 5)
 
-	    fun tryCreateRoom(chance : Double,x: Int, z: Int) {
-		    if (Math.random() < chance || (x == 0 && z == 0))
-			    if (!roomExists(x, z))
-				    createRoom(x, z)
-	    }
+				} else if (z == -squareSize || z == squareSize) {
+					if (!rooms.containsKey(Pair(x, z)))
+						rooms[Pair(x, z)] = createRoom(x, z, roomsSize * 5)
+				}
+			}
+			for (roomEntry in rooms) {
+				this.rooms.add(roomEntry.value)
+			}
+		}
+		create(6 + 1, 1)
+		create(10, 2)
+		create(14, 3)
+		create(20, 4)
 
-	    // devote themselves to a direction and make most chance go to straight
-	    // maybe pass on chance value and make it smaller if it's going in another direction from straight
+		for (room in this.rooms) {
+			room.createDoors()
+		}
+	}
 
-	    // east
-	    tryCreateRoom(chance, x + 1, z)
-		// west
-	    tryCreateRoom(chance, x - 1, z)
-	    // south
-	    tryCreateRoom(chance, x, z + 1)
-	    // north
-	    tryCreateRoom(chance, x, z - 1)
-    }
+	fun createRoom(x: Int, z: Int, delay: Int): Room {
+		val pfbIndex: Int = (Math.random() * (Constants.PREFAB_SIZE * Constants.PREFAB_SIZE)).toInt()
+		val room = Room(this, x, z, pfbIndex)
+		room.create(delay)
+		return room
+	}
 
-    fun roomExists(x: Int, z: Int): Boolean {
-        for (room in rooms) {
-            if (room.x == x && room.z == z)
-                return true;
-        }
-        return false;
-    }
+	fun roomExists(x: Int, z: Int): Boolean {
+		for (room in rooms) {
+			if (room.x == x && room.z == z)
+				return true
+		}
+		return false
+	}
+
+	fun roomExistsAroundWithin(x: Int, z: Int, x2: Int, z2: Int): Boolean {
+		fun roomCheck(x: Int, z: Int): Boolean {
+			if (roomExists(x, z)) {
+				if (x <= x2 && x >= -x2) {
+					if (z <= z2 && z >= -z2) {
+						return true
+					}
+				}
+			}
+			return false
+		}
+
+		if (roomCheck(x + 1, z)) return true
+		if (roomCheck(x - 1, z)) return true
+		if (roomCheck(x, z + 1)) return true
+		if (roomCheck(x, z - 1)) return true
+		return false
+	}
 
 	enum class Direction {
 		NORTH,
