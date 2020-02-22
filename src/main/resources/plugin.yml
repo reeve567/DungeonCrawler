@@ -4,3 +4,6 @@ version: 1.0-SNAPSHOT
 authors:
   - Xwy
   - ImUnsmart
+commands:
+  spawn:
+    permission: dungeoncrawler.spawn

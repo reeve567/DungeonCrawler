@@ -26,7 +26,7 @@ class Floor(val dungeon: Dungeon, val maxRooms: Int) {
 	// second square of 18 - generate 10 & keep generating if not next to one in first square yet
 	// etc
 
-	fun createRooms() {
+	fun createRooms(rings: Int) {
 		val rooms = HashMap<Pair<Int, Int>, Room>()
 		rooms[Pair(0, 0)] = createRoom(0, 0, 0)
 		fun create(roomsSize: Int, squareSize: Int) {
@@ -48,10 +48,10 @@ class Floor(val dungeon: Dungeon, val maxRooms: Int) {
 				this.rooms.add(roomEntry.value)
 			}
 		}
-		create(6 + 1, 1)
-		create(10, 2)
-		create(14, 3)
-		create(20, 4)
+
+		for (i in 1..rings) {
+			create((i * 4) + 2 + (if (i == 1) 1 else 0) + (if (i >= 4) 2 else 0), i)
+		}
 
 		for (room in this.rooms) {
 			room.createDoors()

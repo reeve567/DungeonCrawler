@@ -14,16 +14,6 @@ class Room(private val floor: Floor, val x: Int, val z: Int, private val pfbInde
 		val pfbZ = (pfbIndex % Constants.PREFAB_SIZE)
 		val cx = (1000 + pfbX) * 16
 		val cz = (1000 + pfbZ) * 16
-//        for(y in 0 until 16) {
-//            for (x in 0 until 16) {
-//                for (z in 0 until 16) {
-//                    var b : Block = floor.world.getBlockAt(cx + x, 10 + y, cz + z)
-//                    var r : Block = floor.world.getBlockAt(this.x * 16 + x, 10 + y, this.z * 16 + z)
-//                    r.type = b.type
-//                    r.setData(b.data, true)
-//                }
-//            }
-//        }
 		val prefab: Chunk = floor.world.getChunkAt(Location(floor.world, cx.toDouble(), 10.0, cz.toDouble()))
 		val destination: Chunk = floor.world.getChunkAt(Location(floor.world, x * 16.0, 10.0, z * 16.0))
 
@@ -69,13 +59,13 @@ class Room(private val floor: Floor, val x: Int, val z: Int, private val pfbInde
 		val fromChunk: net.minecraft.server.v1_8_R3.Chunk = fromCC.handle
 		val toChunk: net.minecraft.server.v1_8_R3.Chunk = toCC.handle
 
-		val tsec: Array<ChunkSection> = fromChunk.sections.clone()
+		val tsec: Array<ChunkSection?> = fromChunk.sections.clone()
 		val asec = arrayOfNulls<ChunkSection>(tsec.size)
 
 		for (n in tsec.indices) {
 			if (tsec[n] != null) {
-				asec[n] = ChunkSection(tsec[n].yPosition,true,tsec[n].idArray.clone())
-				asec[n]!!.a(tsec[n].emittedLightArray)
+				asec[n] = ChunkSection(tsec[n]!!.yPosition, true, tsec[n]!!.idArray.clone())
+				asec[n]!!.a(tsec[n]!!.emittedLightArray)
 			} else {
 				asec[n] = tsec[n]
 			}
@@ -83,27 +73,6 @@ class Room(private val floor: Floor, val x: Int, val z: Int, private val pfbInde
 		toChunk.a(asec)
 		toChunk.removeEntities()
 		floor.world.refreshChunk(toChunk.bukkitChunk.x, toChunk.bukkitChunk.z)
-
-		/*fun run() {
-			for (x in 0 until 16) {
-				for (y in 10 until 26) {
-					for (z in 0 until 16) {
-						val fromBlock = from.getBlock(x, y, z)
-						val toBlock = to.getBlock(x, y, z)
-						toBlock.type = fromBlock.type
-						toBlock.state.data = MaterialData(toBlock.state.type, toBlock.state.rawData)
-						toBlock.state.update(true)
-					}
-				}
-			}
-		}
-
-		if (delay > 0) {
-			Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonCrawler.instance, {
-				run()
-			}, delay.toLong())
-		} else run()*/
-
 
 	}
 
