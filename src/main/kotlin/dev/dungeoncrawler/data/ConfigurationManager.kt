@@ -16,6 +16,7 @@ class ConfigurationManager(private val playerDataManager: PlayerDataManager, dat
 	private val gson = GsonFactory.prettyGson!!
 
 	init {
+		dataFolder.mkdirs()
 		if (playerDataFile.exists()) {
 			val bufferedReader = playerDataFile.bufferedReader()
 			val inputString = bufferedReader.use { it.readText() }
@@ -24,7 +25,6 @@ class ConfigurationManager(private val playerDataManager: PlayerDataManager, dat
 			println("PlayerData loaded!")
 		} else {
 			println("No PlayerData")
-			playerDataFile.mkdirs()
 			playerDataFile.createNewFile()
 		}
 
@@ -36,7 +36,6 @@ class ConfigurationManager(private val playerDataManager: PlayerDataManager, dat
 	}
 
 	fun save() {
-		println(gson.toJson(playerDataManager.playerData))
 		playerDataFile.writeText(gson.toJson(playerDataManager.playerData))
 	}
 }

@@ -30,3 +30,9 @@ task("testAndJar") {
 configure<JavaPluginConvention> {
     sourceCompatibility = JavaVersion.VERSION_1_8
 }
+
+tasks {
+    shadowJar {
+        
+    }
+}

@@ -23,9 +23,9 @@ class Floor(val dungeon: Dungeon, val maxRooms: Int) {
     fun createRoom(x: Int, z: Int) {
         if (rooms.size >= maxRooms)
             return;
-        val pfbIndex: Int = (Math.random() * (Constants.PREFAB_SIZE * Constants.PREFAB_SIZE)) as Int
+        val pfbIndex: Int = (Math.random() * (Constants.PREFAB_SIZE * Constants.PREFAB_SIZE)).toInt()
         val r = Room(this, x, z, pfbIndex)
-        val chance: Double = 1 - ((rooms.size as Double / maxRooms) / 2.0)
+        val chance: Double = 1 - ((rooms.size.toDouble() / maxRooms) / 2.0)
         if (Math.random() < chance)
             if (!roomExists(x + 1, z))
                 createRoom(x + 1, z)
