@@ -6,6 +6,8 @@ plugins {
 group = "dev.dungeoncrawler"
 version = "1.0-SNAPSHOT"
 
+
+
 repositories {
     mavenCentral()
     mavenLocal()
@@ -30,7 +32,7 @@ task("testAndJar") {
 tasks.register<Copy>("devin") {
     dependsOn("shadowJar")
     from(file("$buildDir/libs/DungeonCrawler-1.0-SNAPSHOT-all.jar"))
-    to(file("somepath"))
+    destinationDir = file("C:/test")
 }
 
 configure<JavaPluginConvention> {
