@@ -47,13 +47,8 @@ class Room(private val floor : Floor, val x: Int, val z: Int, private val pfbInd
     }
 
     fun destroy() {
-        for(y in 0 until 16) {
-            for (x in 0 until 16) {
-                for (z in 0 until 16) {
-                    var r: Block = floor.world.getBlockAt(this.x * 16 + x, 10 + y, this.z * 16 + z)
-                    r.type = Material.AIR
-                }
-            }
-        }
+        val destination: Chunk = floor.world.getChunkAt(Location(floor.world,x * 16.0, 10.0, z * 16.0))
+        val empty: Chunk = floor.world.getChunkAt(Location(floor.world, 999 * 16.0, 999 * 16.0, 999 * 16.0))
+        copyChunk(empty, destination)
     }
 }
