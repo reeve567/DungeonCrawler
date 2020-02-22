@@ -27,19 +27,25 @@ class Floor(val dungeon: Dungeon, val maxRooms: Int) {
         val r = Room(this, x, z, pfbIndex)
         r.create()
         rooms.add(r)
-        val chance: Double = 1 - ((rooms.size.toDouble() / maxRooms) / 2.0)
-        if (Math.random() < chance)
-            if (!roomExists(x + 1, z))
-                createRoom(x + 1, z)
-        if (Math.random() < chance)
-            if (!roomExists(x - 1, z))
-                createRoom(x - 1, z)
-        if (Math.random() < chance)
-            if (!roomExists(x, z + 1))
-                createRoom(x, z + 1)
-        if (Math.random() < chance)
-            if (!roomExists(x, z - 1))
-                createRoom(x, z - 1)
+        val chance: Double = 1 - ((rooms.size.toDouble() / maxRooms / 4.0) / 2.0)
+
+	    fun tryCreateRoom(chance : Double,x: Int, z: Int) {
+		    if (Math.random() < chance || (x == 0 && z == 0))
+			    if (!roomExists(x, z))
+				    createRoom(x, z)
+	    }
+
+	    // devote themselves to a direction and make most chance go to straight
+	    // maybe pass on chance value and make it smaller if it's going in another direction from straight
+
+	    // east
+	    tryCreateRoom(chance, x + 1, z)
+		// west
+	    tryCreateRoom(chance, x - 1, z)
+	    // south
+	    tryCreateRoom(chance, x, z + 1)
+	    // north
+	    tryCreateRoom(chance, x, z - 1)
     }
 
     fun roomExists(x: Int, z: Int): Boolean {
@@ -49,4 +55,12 @@ class Floor(val dungeon: Dungeon, val maxRooms: Int) {
         }
         return false;
     }
+
+	enum class Direction {
+		NORTH,
+		EAST,
+		SOUTH,
+		WEST,
+		NONE
+	}
 }
