@@ -8,7 +8,7 @@ class Floor(val dungeon: Dungeon, val maxRooms: Int) {
 
 
     val world: World = Bukkit.getWorld("world")
-    val rooms: ArrayList<Room> = ArrayList()
+    private val rooms: ArrayList<Room> = ArrayList()
 
     init {
     }
@@ -25,6 +25,8 @@ class Floor(val dungeon: Dungeon, val maxRooms: Int) {
             return;
         val pfbIndex: Int = (Math.random() * (Constants.PREFAB_SIZE * Constants.PREFAB_SIZE)).toInt()
         val r = Room(this, x, z, pfbIndex)
+        r.create()
+        rooms.add(r)
         val chance: Double = 1 - ((rooms.size.toDouble() / maxRooms) / 2.0)
         if (Math.random() < chance)
             if (!roomExists(x + 1, z))

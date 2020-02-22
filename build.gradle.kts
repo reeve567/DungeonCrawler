@@ -32,7 +32,7 @@ task("testAndJar") {
 tasks.register<Copy>("devin") {
     dependsOn("shadowJar")
     from(file("$buildDir/libs/DungeonCrawler-1.0-SNAPSHOT-all.jar"))
-    destinationDir = file("C:/test")
+    destinationDir = file("C:/Users/User/Desktop/Minecraft/Bukkit/plugins")
 }
 
 configure<JavaPluginConvention> {
