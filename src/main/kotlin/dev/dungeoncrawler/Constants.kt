@@ -6,6 +6,12 @@ import org.bukkit.Location
 object Constants {
 	const val PREFAB_SIZE = 3
 	val SPAWN_LOCATION = Location(Bukkit.getWorld("world"), 10000.5, 41.0, 10000.5)
+	const val CHEST_SPAWN_CHANCE = 50
+	const val CHEST_MIN_LOOT = 1
+	const val CHEST_MAX_LOOT = 5
+
+	const val MOB_SPAWN_MIN = 2
+	const val MOB_SPAWN_MAX = 4
 
 	object SpawnPortal {
 		object CornerOne {

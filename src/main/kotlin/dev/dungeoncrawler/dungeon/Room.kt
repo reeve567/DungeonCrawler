@@ -2,6 +2,7 @@ package dev.dungeoncrawler.dungeon
 
 import dev.dungeoncrawler.Constants
 import net.minecraft.server.v1_8_R3.ChunkSection
+import org.bukkit.Bukkit
 import org.bukkit.Chunk
 import org.bukkit.Location
 import org.bukkit.Material
@@ -80,5 +81,9 @@ class Room(private val floor: Floor, val x: Int, val z: Int, private val pfbInde
 		val destination: Chunk = floor.world.getChunkAt(Location(floor.world, x * 16.0, 10.0, z * 16.0))
 		val empty: Chunk = floor.world.getChunkAt(Location(floor.world, 999 * 16.0, 999 * 16.0, 999 * 16.0))
 		copyChunk(empty, destination, 0)
+	}
+
+	fun getChunk(): Chunk {
+		return Bukkit.getWorld("world").getChunkAt(x, z)
 	}
 }

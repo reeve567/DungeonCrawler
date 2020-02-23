@@ -1,15 +1,143 @@
 package dev.dungeoncrawler.dungeon
 
 import dev.dungeoncrawler.Constants
-import org.bukkit.Bukkit
-import org.bukkit.World
+import dev.reeve.quests.item
+import dev.reeve.quests.itemMeta
+import org.bukkit.*
+import org.bukkit.block.Chest
+import org.bukkit.entity.EntityType
+import org.bukkit.entity.Firework
+import org.bukkit.entity.Skeleton
+import org.bukkit.entity.Zombie
+import org.bukkit.event.EventHandler
+import org.bukkit.event.Listener
+import org.bukkit.event.entity.EntityDeathEvent
+import org.bukkit.event.inventory.InventoryCloseEvent
+import org.bukkit.event.inventory.InventoryType
+import org.bukkit.event.player.PlayerMoveEvent
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
+import kotlin.collections.HashSet
+import kotlin.math.pow
 import kotlin.random.Random
 import kotlin.random.nextInt
 
-class Floor(val dungeon: Dungeon, val maxRooms: Int) {
+class Floor(val dungeon: Dungeon, val number: Int) : Listener {
 
 	val world: World = Bukkit.getWorld("world")
 	private val rooms: ArrayList<Room> = ArrayList()
+	private val visited = HashMap<UUID, HashSet<Pair<Int, Int>>>()
+
+	@EventHandler
+	fun onChangeChunk(e: PlayerMoveEvent) {
+		if (e.to.chunk != e.from.chunk) {
+			val room = rooms.find { it.x == e.to.chunk.x && it.z == e.to.chunk.z }
+			if (room != null) {
+				val pair = Pair(e.to.chunk.x, e.to.chunk.z)
+				val chunk = room.getChunk()
+				fun addChest() {
+					if (Random.nextInt(IntRange(1, 100)) <= Constants.CHEST_SPAWN_CHANCE) {
+						var found = false
+						do {
+							val rand = Pair(Random.nextInt(IntRange(1, 15)), Random.nextInt(IntRange(1, 15)))
+							for (i in 10..14) {
+								val block = chunk.getBlock(rand.first, i, rand.second)
+								if (block.type == Material.AIR && !found) {
+									found = true
+									block.type = Material.CHEST
+									val firework = block.location.world.spawnEntity(block.location.add(0.5, 1.5, 0.5), EntityType.FIREWORK) as Firework
+									val meta = firework.fireworkMeta
+									meta.addEffect(
+											FireworkEffect.builder().with(FireworkEffect.Type.BALL).withColor(Color.RED).withColor(Color.BLACK).build()
+									)
+									firework.fireworkMeta = meta
+									Bukkit.getScheduler().scheduleSyncDelayedTask(dungeon.plugin, {
+										firework.playEffect(EntityEffect.FIREWORK_EXPLODE)
+									}, 1)
+
+									val chest = block.state as Chest
+									val lootCount = Random.nextInt(IntRange(Constants.CHEST_MIN_LOOT, Constants.CHEST_MAX_LOOT))
+									for (i in 0 until lootCount) {
+										val slot = Random.nextInt(0, chest.blockInventory.size)
+										// set to some loot from a loot table or smth
+										chest.blockInventory.setItem(slot, item(Material.DIAMOND) {
+											itemMeta {
+												displayName = "§6just some fucking diamond"
+											}
+										})
+									}
+								}
+							}
+						} while (!found)
+
+					}
+				}
+
+				fun spawnMobs() {
+					val amount = Random.nextInt(IntRange(Constants.MOB_SPAWN_MIN, Constants.MOB_SPAWN_MAX))
+					for (i in 0 until amount) {
+						var found = false
+						do {
+							val rand = Pair(Random.nextInt(IntRange(1, 15)), Random.nextInt(IntRange(1, 15)))
+							for (y in 10..14) {
+								val block = chunk.getBlock(rand.first, y, rand.second)
+								if (!found && block.type.isSolid && block.location.add(0.0, 1.0, 0.0).block.type == Material.AIR && block.location.add(0.0, 2.0, 0.0).block.type == Material.AIR) {
+									found = true
+									val type = Random.nextInt(0..1)
+									when (type) {
+										1 -> {
+											val zombie = block.world.spawn(block.location.add(0.5, 1.0, 0.5), Zombie::class.java)
+										}
+										else -> {
+											val skeleton = block.world.spawn(block.location.add(0.5, 1.0, 0.5), Skeleton::class.java)
+										}
+									}
+								}
+							}
+						} while (!found)
+					}
+				}
+
+				if (pair != Pair(0, 0)) {
+					if (visited.containsKey(e.player.uniqueId)) {
+						if (!visited[e.player.uniqueId]!!.contains(pair)) {
+							addChest()
+							spawnMobs()
+							visited[e.player.uniqueId]!!.add(pair)
+						}
+					} else {
+						addChest()
+						spawnMobs()
+						visited[e.player.uniqueId] = HashSet(setOf(pair))
+					}
+				}
+			}
+		}
+	}
+
+	@EventHandler
+	fun chestCloseEvent(e: InventoryCloseEvent) {
+		if (e.inventory.type == InventoryType.CHEST) {
+			if (e.inventory.contents.find { it != null && it.type != Material.AIR } == null) {
+				val chest = (e.inventory.holder as Chest).block
+				if (roomExists(chest.chunk.x, chest.chunk.z)) {
+					chest.type = Material.AIR
+				}
+			}
+		}
+	}
+
+	@EventHandler
+	fun onMobDeath(e: EntityDeathEvent) {
+		if (e.entity.type == EntityType.SKELETON || e.entity.type == EntityType.ZOMBIE) {
+			e.droppedExp = 0
+			val killer = e.entity.killer
+			if (roomExists(killer.location.chunk.x, killer.location.chunk.z)) {
+				dungeon.playerDataManager.addBalance(killer, Random.nextInt(6..12) * number.toDouble().pow(2.0))
+			}
+		}
+	}
 
 	fun destroy() {
 		for (room in rooms) {

@@ -1,26 +1,29 @@
 package dev.dungeoncrawler.dungeon
 
 import dev.dungeoncrawler.DungeonCrawler
+import dev.dungeoncrawler.data.PlayerDataManager
+import org.bukkit.Bukkit
 
-class Dungeon(val dc : DungeonCrawler) {
+class Dungeon(val plugin: DungeonCrawler, val playerDataManager: PlayerDataManager) {
 
-    val floors : Array<Floor?> = arrayOfNulls(1)
+	val floors: Array<Floor?> = arrayOfNulls(1)
 
-    init {
-        for(i in floors.indices) {
-            floors[i] = Floor(this, 20)
-        }
-    }
+	init {
+		for (i in floors.indices) {
+			floors[i] = Floor(this, i + 1)
+			Bukkit.getPluginManager().registerEvents(floors[i], plugin)
+		}
+	}
 
-    fun generate() {
-        for(floor in floors) {
-            floor?.createRooms(6)
-        }
-    }
+	fun generate() {
+		for (floor in floors) {
+			floor?.createRooms(6)
+		}
+	}
 
-    fun destroy() {
-        for(floor in floors) {
-            floor?.destroy()
-        }
-    }
+	fun destroy() {
+		for (floor in floors) {
+			floor?.destroy()
+		}
+	}
 }

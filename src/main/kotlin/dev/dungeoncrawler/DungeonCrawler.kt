@@ -5,6 +5,7 @@ import dev.dungeoncrawler.data.ConfigurationManager
 import dev.dungeoncrawler.data.PlayerDataManager
 import dev.dungeoncrawler.dungeon.Dungeon
 import dev.dungeoncrawler.handler.BankHandler
+import dev.dungeoncrawler.handler.FoodHandler
 import dev.dungeoncrawler.handler.GamePortalHandler
 import dev.dungeoncrawler.handler.JoinLeaveHandler
 import org.bukkit.Bukkit
@@ -28,13 +29,14 @@ class DungeonCrawler : JavaPlugin() {
 		register(
 				JoinLeaveHandler(playerDataManager),
 				BankHandler(playerDataManager),
-				GamePortalHandler()
+				GamePortalHandler(),
+				FoodHandler()
 		)
 		val world = Bukkit.getWorld("world")
 		world.setGameRuleValue("doMobSpawning", "false")
 		world.setSpawnLocation(10000, 41, 10000)
 
-		dungeon = Dungeon(this)
+		dungeon = Dungeon(this, playerDataManager)
 		dungeon!!.generate()
 		loadCommands()
 	}
@@ -51,6 +53,6 @@ class DungeonCrawler : JavaPlugin() {
 	}
 
 	fun loadCommands() {
-		SpawnCommand()
+		SpawnCommand(this)
 	}
 }
