@@ -1,5 +1,6 @@
 package dev.dungeoncrawler
 
+import dev.dungeoncrawler.command.BalanceCommand
 import dev.dungeoncrawler.command.SpawnCommand
 import dev.dungeoncrawler.data.ConfigurationManager
 import dev.dungeoncrawler.data.PlayerDataManager
@@ -61,5 +62,6 @@ class DungeonCrawler : JavaPlugin() {
 
 	fun loadCommands() {
 		SpawnCommand(this)
+		BalanceCommand(playerDataManager)
 	}
 }

@@ -7,3 +7,5 @@ authors:
 commands:
   spawn:
     permission: dungeoncrawler.spawn
+  balance:
+    aliases: [bal]
