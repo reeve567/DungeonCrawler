@@ -15,7 +15,7 @@ class BankHandler(private val playerDataManager: PlayerDataManager) : Listener {
 			if (e.clickedBlock.type == Material.ENDER_CHEST) {
 				e.isCancelled = true
 				playerDataManager.playerData[e.player.uniqueId]?.also {
-					it.bankData.pages[1]?.openPage(e.player)
+					it.bankData.pages[1]?.openPage(e.player, playerDataManager, 1)
 				}
 				e.player.playSound(e.clickedBlock.location, Sound.CHEST_OPEN, .5f, .35f)
 			}
