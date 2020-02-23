@@ -4,7 +4,10 @@ import dev.dungeoncrawler.command.SpawnCommand
 import dev.dungeoncrawler.data.ConfigurationManager
 import dev.dungeoncrawler.data.PlayerDataManager
 import dev.dungeoncrawler.dungeon.Dungeon
-import dev.dungeoncrawler.handler.*
+import dev.dungeoncrawler.handler.BankHandler
+import dev.dungeoncrawler.handler.FoodHandler
+import dev.dungeoncrawler.handler.GamePortalHandler
+import dev.dungeoncrawler.handler.JoinLeaveHandler
 import org.bukkit.Bukkit
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
@@ -48,6 +51,10 @@ class DungeonCrawler : JavaPlugin() {
 	}
 
 	override fun onDisable() {
+		for (player in Bukkit.getOnlinePlayers()) {
+			player.teleport(Constants.SPAWN_LOCATION)
+		}
+
 		configurationManager.save()
 		dungeon?.destroy()
 	}

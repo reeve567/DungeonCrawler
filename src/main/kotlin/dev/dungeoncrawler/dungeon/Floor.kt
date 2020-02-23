@@ -151,7 +151,7 @@ class Floor(val dungeon: Dungeon, val number: Int) : Listener {
 					if (mobs.containsKey(e.entity.uniqueId)) {
 						left[mobs[e.entity.uniqueId]!!] = left[mobs[e.entity.uniqueId]!!]!! - 1
 						if (left[mobs[e.entity.uniqueId]!!]!! == 0) {
-							room.createFakeDoors(killer, Material.AIR, 0)
+							room.createFakeDoors(Bukkit.getPlayer(mobs[e.entity.uniqueId]!!), Material.AIR, 0)
 						}
 						mobs.remove(e.entity.uniqueId)
 					}

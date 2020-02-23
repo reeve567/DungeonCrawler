@@ -1,14 +1,11 @@
 package dev.dungeoncrawler.loot
 
-import dev.dungeoncrawler.utility.item
-import org.bukkit.Material
-import org.bukkit.inventory.ItemStack
 import kotlin.random.Random
 
 class Weapon(prefix: Prefix? = null, damage: Double? = null, floor: Int? = null) {
 	val prefix: Prefix
-	val damage: Double
-	val material: Material
+	//val damage: Double
+	//val material: Material
 
 	init {
 		if (prefix == null) {
@@ -36,18 +33,18 @@ class Weapon(prefix: Prefix? = null, damage: Double? = null, floor: Int? = null)
 			}
 			this.prefix = values[Random.nextInt(values.size)]
 		} else this.prefix = prefix
-		if (damage == null) {
+		/*if (damage == null) {
 			if (floor == null) {
 
 			} else {
 
 			}
-		} else this.damage = damage
+		} else this.damage = damage*/
 	}
 
-	fun build(): ItemStack {
+	/*fun build(): ItemStack {
 		return item(material) {
-			
+
 		}
-	}
+	}*/
 }
