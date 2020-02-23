@@ -13,7 +13,7 @@ class PlayerDataManager {
 	var playerData: HashMap<UUID, PlayerData> = HashMap()
 	var marketItems = HashMap<UUID, ArrayList<Triple<Date, Pair<Double, Boolean>, ItemStack>>>()
 
-	fun addBalance(uuid: UUID, amount: Double): Boolean {
+	fun addBalance(uuid: UUID, amount: Int): Boolean {
 		if (playerData.containsKey(uuid)) {
 			playerData[uuid]!!.balance += amount
 			Bukkit.getPlayer(uuid).sendActionBar("§6+$amount Gold")
@@ -24,7 +24,7 @@ class PlayerDataManager {
 		return false
 	}
 
-	fun addBalance(player: Player, amount: Double) {
+	fun addBalance(player: Player, amount: Int) {
 		this.addBalance(player.uniqueId, amount)
 	}
 }

@@ -127,7 +127,7 @@ class Floor(val dungeon: Dungeon, val number: Int) : Listener {
 			}
 		}
 	}
-
+	
 	@EventHandler
 	fun chestCloseEvent(e: InventoryCloseEvent) {
 		if (e.inventory.type == InventoryType.CHEST) {
@@ -157,7 +157,7 @@ class Floor(val dungeon: Dungeon, val number: Int) : Listener {
 					}
 				}
 
-				dungeon.playerDataManager.addBalance(killer, Random.nextInt(6..12) * number.toDouble().pow(2.0))
+				dungeon.playerDataManager.addBalance(killer, (Random.nextInt(6..12) * number.toDouble().pow(2.0)).toInt())
 			}
 		}
 	}
