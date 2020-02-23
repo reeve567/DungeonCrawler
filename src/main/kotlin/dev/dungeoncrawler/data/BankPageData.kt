@@ -1,5 +1,6 @@
 package dev.dungeoncrawler.data
 
+import dev.dungeoncrawler.utility.*
 import dev.reeve.quests.*
 import org.bukkit.Material
 import org.bukkit.entity.Player

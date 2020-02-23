@@ -1,4 +1,4 @@
-package dev.reeve.quests
+package dev.dungeoncrawler.utility
 
 import dev.dungeoncrawler.DungeonCrawler
 import org.bukkit.Bukkit

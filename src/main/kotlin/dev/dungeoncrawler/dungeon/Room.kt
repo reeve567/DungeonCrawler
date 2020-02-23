@@ -2,12 +2,9 @@ package dev.dungeoncrawler.dungeon
 
 import dev.dungeoncrawler.Constants
 import net.minecraft.server.v1_8_R3.ChunkSection
-import org.bukkit.Bukkit
-import org.bukkit.Chunk
-import org.bukkit.Location
-import org.bukkit.Material
+import org.bukkit.*
 import org.bukkit.craftbukkit.v1_8_R3.CraftChunk
-
+import org.bukkit.entity.Player
 
 class Room(private val floor: Floor, val x: Int, val z: Int, private val pfbIndex: Int) {
 	fun create(delay: Int) {
@@ -53,6 +50,48 @@ class Room(private val floor: Floor, val x: Int, val z: Int, private val pfbInde
 		doX(-1)
 		doX(16)
 	}
+
+	fun createFakeDoors(player: Player, type: Material = Material.STAINED_GLASS, data: Byte = 14) {
+		fun doZ(diffX: Int) {
+			val startZ = (z * 16) + 6
+			val startX = (x * 16) + diffX
+			for (z2 in startZ..startZ + 3) {
+				for (y2 in 11..12) {
+					val location = Location(Bukkit.getWorld("world"), startX.toDouble(), y2.toDouble(), z2.toDouble())
+					if (location.block.type != Material.AIR)
+						return
+					player.sendBlockChange(location, type, data)
+				}
+			}
+			player.sendBlockChange(Location(Bukkit.getWorld("world"), startX.toDouble(), 13.0, startZ + 1.0), type, data)
+			player.sendBlockChange(Location(Bukkit.getWorld("world"), startX.toDouble(), 13.0, startZ + 2.0), type, data)
+		}
+
+		fun doX(diffZ: Int) {
+			val startZ = (z * 16) + diffZ
+			val startX = (x * 16) + 6
+			for (x2 in startX..startX + 3) {
+				for (y2 in 11..12) {
+					val location = Location(Bukkit.getWorld("world"), x2.toDouble(), y2.toDouble(), startZ.toDouble())
+					if (location.block.type != Material.AIR)
+						return
+					player.sendBlockChange(location, type, data)
+				}
+			}
+			player.sendBlockChange(Location(Bukkit.getWorld("world"), startX + 1.0, 13.0, startZ.toDouble()), type, data)
+			player.sendBlockChange(Location(Bukkit.getWorld("world"), startX + 2.0, 13.0, startZ.toDouble()), type, data)
+		}
+
+		doZ(-1)
+		doZ(16)
+		doX(-1)
+		doX(16)
+		if (type == Material.STAINED_GLASS)
+			player.playSound(player.location, Sound.DOOR_CLOSE, 0.5f, 1f)
+		else
+			player.playSound(player.location, Sound.DOOR_OPEN, 0.5f, 1f)
+	}
+
 
 	fun copyChunk(from: Chunk, to: Chunk, delay: Int) {
 		val fromCC = from as CraftChunk

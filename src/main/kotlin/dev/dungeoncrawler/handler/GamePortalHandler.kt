@@ -1,11 +1,13 @@
 package dev.dungeoncrawler.handler
 
 import dev.dungeoncrawler.Constants
+import dev.dungeoncrawler.data.PlayerDataManager
+import dev.dungeoncrawler.dungeon.Dungeon
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerTeleportEvent
 
-class GamePortalHandler : Listener {
+class GamePortalHandler(val playerDataManager: PlayerDataManager, val dungeon: Dungeon) : Listener {
 
 	@EventHandler
 	fun onEnterPortal(e: PlayerTeleportEvent) {
@@ -17,6 +19,12 @@ class GamePortalHandler : Listener {
 			if (x >= Constants.SpawnPortal.CornerOne.X && x <= Constants.SpawnPortal.CornerTwo.X) {
 				if (z >= Constants.SpawnPortal.CornerOne.Z && z <= Constants.SpawnPortal.CornerTwo.Z) {
 					// get player's level and send them to appropriate floor
+					playerDataManager.playerData[e.player.uniqueId]?.also { playerData ->
+						if (playerData.highestFloor == 0) {
+							playerData.highestFloor = 1
+						}
+						dungeon.floors[playerData.highestFloor - 1]?.teleportPlayer(e.player)
+					}
 				}
 			}
 		}

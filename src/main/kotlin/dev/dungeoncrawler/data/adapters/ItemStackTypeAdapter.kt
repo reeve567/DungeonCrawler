@@ -1,8 +1,8 @@
 package dev.dungeoncrawler.data.adapters
 
 import com.google.gson.*
-import dev.reeve.quests.item
-import dev.reeve.quests.itemMeta
+import dev.dungeoncrawler.utility.item
+import dev.dungeoncrawler.utility.itemMeta
 import org.bukkit.Material
 import org.bukkit.enchantments.Enchantment
 import org.bukkit.inventory.ItemStack

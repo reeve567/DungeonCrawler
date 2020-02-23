@@ -1,9 +1,9 @@
 package dev.dungeoncrawler.handler
 
 import dev.dungeoncrawler.data.PlayerDataManager
-import dev.reeve.quests.clickableItem
-import dev.reeve.quests.gui
-import dev.reeve.quests.item
+import dev.dungeoncrawler.utility.clickableItem
+import dev.dungeoncrawler.utility.gui
+import dev.dungeoncrawler.utility.item
 import org.bukkit.Material
 import org.bukkit.Sound
 import org.bukkit.entity.Player
