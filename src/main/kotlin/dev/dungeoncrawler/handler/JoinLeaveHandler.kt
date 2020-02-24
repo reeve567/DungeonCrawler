@@ -23,6 +23,18 @@ class JoinLeaveHandler(private val dungeonCrawler: DungeonCrawler, private val p
 		Bukkit.getScheduler().scheduleSyncDelayedTask(dungeonCrawler, {
 			e.player.teleport(Constants.SPAWN_LOCATION)
 		}, 5)
+
+		val scoreboard = Bukkit.getScoreboardManager().mainScoreboard
+		if (scoreboard.getPlayerTeam(e.player) == null) {
+			for (enum in Constants.RankTeam.values()) {
+				if (e.player.hasPermission(enum.permission)) {
+					scoreboard.getTeam(enum.label)?.also {
+						it.addPlayer(e.player)
+					}
+					break
+				}
+			}
+		}
 	}
 
 	@EventHandler
