@@ -6,8 +6,12 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.entity.FoodLevelChangeEvent
+import org.bukkit.event.player.AsyncPlayerChatEvent
 import org.bukkit.event.player.PlayerPickupItemEvent
+import org.bukkit.event.server.ServerListPingEvent
+import java.awt.SystemColor
 import java.util.*
+
 
 class GeneralHandler(private val playerDataManager: PlayerDataManager) : Listener {
 	@EventHandler
@@ -33,5 +37,15 @@ class GeneralHandler(private val playerDataManager: PlayerDataManager) : Listene
 				playerDataManager.addBalance(owner, gold)
 			}
 		}
+	}
+	
+	@EventHandler
+	fun onPing(e: ServerListPingEvent) {
+		e.motd = "§6DungeonCrawler\n§8» §cComing soon"
+	}
+	
+	@EventHandler
+	fun onChat(e: AsyncPlayerChatEvent) {
+		e.format = "§8[§6${playerDataManager.playerData[e.player.uniqueId]!!.highestFloor}§8] §r${e.player.name} §7» §r${e.message}"
 	}
 }

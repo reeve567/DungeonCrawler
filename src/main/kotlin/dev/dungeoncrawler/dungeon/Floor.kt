@@ -1,12 +1,14 @@
 package dev.dungeoncrawler.dungeon
 
 import dev.dungeoncrawler.Constants
+import dev.dungeoncrawler.extensions.copyTo
 import dev.dungeoncrawler.extensions.dropGold
 import dev.dungeoncrawler.extensions.isSafe
 import dev.dungeoncrawler.utility.item
 import dev.dungeoncrawler.utility.itemMeta
 import org.bukkit.*
 import org.bukkit.block.Chest
+import org.bukkit.craftbukkit.v1_8_R3.CraftChunk
 import org.bukkit.entity.*
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -104,14 +106,14 @@ class Floor(private val dungeon: Dungeon, private val number: Int, private val o
 									when (type) {
 										1 -> {
 											val zombie = block.world.spawn(block.location.add(0.5, 1.0, 0.5), Zombie::class.java)
-											zombie.equipment.helmet = ItemStack(Material.STONE_BUTTON)
+											//zombie.equipment.helmet = ItemStack(Material.STONE_BUTTON)
 											zombie.equipment.helmetDropChance = 0f
 											zombie.target = e.player
 											mobs[zombie.uniqueId] = e.player.uniqueId
 										}
 										else -> {
 											val skeleton = block.world.spawn(block.location.add(0.5, 1.0, 0.5), Skeleton::class.java)
-											skeleton.equipment.helmet = ItemStack(Material.STONE_BUTTON)
+											//skeleton.equipment.helmet = ItemStack(Material.STONE_BUTTON)
 											skeleton.equipment.helmetDropChance = 0f
 											skeleton.target = e.player
 											mobs[skeleton.uniqueId] = e.player.uniqueId
@@ -218,7 +220,9 @@ class Floor(private val dungeon: Dungeon, private val number: Int, private val o
 			create((i * 4) + 2 + (if (i == 1) 1 else 0) + (if (i >= 4) 2 else 0), i)
 		}
 		if (createCheckpoints) {
-			for (i in 1..3) {
+			(Bukkit.getWorld("world").getChunkAt(998, 999) as CraftChunk).handle
+			
+			for (i in 1..Constants.CHECKPOINT_COUNT) {
 				val size = rings + 1
 				var found = false
 				do {
@@ -243,16 +247,26 @@ class Floor(private val dungeon: Dungeon, private val number: Int, private val o
 						println("created checkpoint - ${rooms[rand]!!.x} + ${rooms[rand]!!.z}")
 					}
 				} while (!found)
+				
+				for (roomEntry in rooms) {
+					this.rooms.add(roomEntry.value)
+				}
 			}
-			for (roomEntry in rooms) {
-				this.rooms.add(roomEntry.value)
-			}
+			
+			
 		}
-		
-		
 		
 		for (room in this.rooms) {
 			room.createDoors()
+		}
+		
+		val size = rings + 1
+		for (i in -size..size) {
+			for (j in -size..size) {
+				if (getRoom(i + offsetX, j) == null) {
+					world.getChunkAt(998, 999).copyTo(world.getChunkAt(i + offsetX, j))
+				}
+			}
 		}
 	}
 	

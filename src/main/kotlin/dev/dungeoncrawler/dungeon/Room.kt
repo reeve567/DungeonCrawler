@@ -1,6 +1,7 @@
 package dev.dungeoncrawler.dungeon
 
 import dev.dungeoncrawler.Constants
+import dev.dungeoncrawler.extensions.copyTo
 import net.minecraft.server.v1_8_R3.ChunkSection
 import org.bukkit.*
 import org.bukkit.craftbukkit.v1_8_R3.CraftChunk
@@ -21,7 +22,7 @@ class Room(private val floor: Floor, val x: Int, val z: Int, private val pfbInde
 		}
 		val destination: Chunk = floor.world.getChunkAt(Location(floor.world, x * 16.0, 10.0, z * 16.0))
 		
-		copyChunk(prefab, destination)
+		prefab.copyTo(destination)
 	}
 	
 	fun createDoors() {
@@ -98,34 +99,10 @@ class Room(private val floor: Floor, val x: Int, val z: Int, private val pfbInde
 			player.playSound(player.location, Sound.DOOR_OPEN, 0.5f, 1f)
 	}
 	
-	
-	fun copyChunk(from: Chunk, to: Chunk) {
-		val fromCC = from as CraftChunk
-		val toCC = to as CraftChunk
-		val fromChunk: net.minecraft.server.v1_8_R3.Chunk = fromCC.handle
-		val toChunk: net.minecraft.server.v1_8_R3.Chunk = toCC.handle
-		
-		val tsec: Array<ChunkSection?> = fromChunk.sections.clone()
-		val asec = arrayOfNulls<ChunkSection>(tsec.size)
-		
-		for (n in tsec.indices) {
-			if (tsec[n] != null) {
-				asec[n] = ChunkSection(tsec[n]!!.yPosition, true, tsec[n]!!.idArray.clone())
-				asec[n]!!.a(tsec[n]!!.emittedLightArray)
-			} else {
-				asec[n] = tsec[n]
-			}
-		}
-		toChunk.a(asec)
-		toChunk.removeEntities()
-		floor.world.refreshChunk(toChunk.bukkitChunk.x, toChunk.bukkitChunk.z)
-		
-	}
-	
 	fun destroy() {
 		val destination: Chunk = floor.world.getChunkAt(Location(floor.world, x * 16.0, 10.0, z * 16.0))
 		val empty: Chunk = floor.world.getChunkAt(Location(floor.world, 999 * 16.0, 999 * 16.0, 999 * 16.0))
-		copyChunk(empty, destination)
+		empty.copyTo(destination)
 	}
 	
 	fun getChunk(): Chunk {

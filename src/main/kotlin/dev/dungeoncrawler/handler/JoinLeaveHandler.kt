@@ -6,6 +6,7 @@ import dev.dungeoncrawler.data.BankData
 import dev.dungeoncrawler.data.MarketData
 import dev.dungeoncrawler.data.PlayerData
 import dev.dungeoncrawler.data.PlayerDataManager
+import dev.dungeoncrawler.extensions.updateTeam
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -24,17 +25,7 @@ class JoinLeaveHandler(private val dungeonCrawler: DungeonCrawler, private val p
 			e.player.teleport(Constants.SPAWN_LOCATION)
 		}, 5)
 
-		val scoreboard = Bukkit.getScoreboardManager().mainScoreboard
-		if (scoreboard.getPlayerTeam(e.player) == null) {
-			for (enum in Constants.RankTeam.values()) {
-				if (e.player.hasPermission(enum.permission)) {
-					scoreboard.getTeam(enum.label)?.also {
-						it.addPlayer(e.player)
-					}
-					break
-				}
-			}
-		}
+		e.player.updateTeam()
 	}
 
 	@EventHandler

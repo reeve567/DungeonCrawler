@@ -12,6 +12,8 @@ object Constants {
 
 	const val MOB_SPAWN_MIN = 2
 	const val MOB_SPAWN_MAX = 4
+	
+	const val CHECKPOINT_COUNT = 2
 
 	object SpawnPortal {
 		object CornerOne {
@@ -26,9 +28,9 @@ object Constants {
 	}
 
 	enum class RankTeam(val label: String, val prefix: String, val permission: String) {
-		DEVELOPER("a_developers", "§b§lDEV§r", "dungeoncrawler.developer"),
-		HELPER("b_helpers", "§a§lHELPER§r", "dungeoncrawler.helper"),
-		TESTER("c_testers", "§c§lTESTER§r", "dungeoncrawler.tester"),
-		MEMBER("d_members", "§7&lMEMBER§r", "dungeoncrawler.member")
+		DEVELOPER("a_developers", "§b§lDEV §r", "dungeoncrawler.developer"),
+		HELPER("b_helpers", "§a§lHELPER §r", "dungeoncrawler.helper"),
+		TESTER("c_testers", "§c§lTESTER §r", "dungeoncrawler.tester"),
+		MEMBER("d_members", "§7&lMEMBER §r", "dungeoncrawler.member")
 	}
 }

@@ -6,7 +6,7 @@ import org.bukkit.Bukkit
 
 class Dungeon(val plugin: DungeonCrawler, val playerDataManager: PlayerDataManager) {
 	
-	val floors: Array<Floor?> = arrayOfNulls(3)
+	val floors: Array<Floor?> = arrayOfNulls(5)
 	
 	init {
 		for (i in floors.indices) {
