@@ -8,4 +8,8 @@ commands:
   spawn:
     permission: dungeoncrawler.spawn
   balance:
-    aliases: [bal]
+    aliases:
+      - bal
+  party:
+    aliases:
+      - p
