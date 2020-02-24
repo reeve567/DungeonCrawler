@@ -23,7 +23,7 @@ import kotlin.math.pow
 import kotlin.random.Random
 import kotlin.random.nextInt
 
-class Floor(val dungeon: Dungeon, val number: Int) : Listener {
+class Floor(private val dungeon: Dungeon, private val number: Int, private val offsetX: Int, val createCheckpoints: Boolean = true) : Listener {
 	
 	val world: World = Bukkit.getWorld("world")
 	private val rooms: ArrayList<Room> = ArrayList()
@@ -33,6 +33,19 @@ class Floor(val dungeon: Dungeon, val number: Int) : Listener {
 	
 	@EventHandler
 	fun onChangeChunk(e: PlayerMoveEvent) {
+		getRoom(e.to.chunk.x, e.to.chunk.z)?.also {
+			if (it.isCheckpoint) {
+				if (e.to.blockX % 16 in 7..8 || e.to.blockX % 16 in -8..-7) {
+					if (e.to.blockZ % 16 in 7..8 || e.to.blockZ % 16 in -8..-7) {
+						if (e.to.blockY == 9) {
+							e.player.sendTitle("§6Floor $number completed", "")
+							e.player.teleport(Constants.SPAWN_LOCATION)
+							dungeon.playerDataManager.playerData[e.player.uniqueId]!!.highestFloor = number + 1
+						}
+					}
+				}
+			}
+		}
 		if (e.to.chunk != e.from.chunk) {
 			val room = rooms.find { it.x == e.to.chunk.x && it.z == e.to.chunk.z }
 			if (room != null) {
@@ -112,7 +125,7 @@ class Floor(val dungeon: Dungeon, val number: Int) : Listener {
 					room.createFakeDoors(e.player)
 				}
 				
-				if (pair != Pair(0, 0)) {
+				if (pair != Pair(offsetX, 0) && !getRoom(pair.first, pair.second)!!.isCheckpoint) {
 					if (visited.containsKey(e.player.uniqueId)) {
 						if (!visited[e.player.uniqueId]!!.contains(pair)) {
 							addChest()
@@ -131,7 +144,7 @@ class Floor(val dungeon: Dungeon, val number: Int) : Listener {
 	
 	@EventHandler
 	fun chestCloseEvent(e: InventoryCloseEvent) {
-		if (e.inventory.type == InventoryType.CHEST) {
+		if (e.inventory.type == InventoryType.CHEST && e.inventory.holder != null) {
 			if (e.inventory.contents.find { it != null && it.type != Material.AIR } == null) {
 				val chest = (e.inventory.holder as Chest).block
 				if (roomExists(chest.chunk.x, chest.chunk.z)) {
@@ -180,7 +193,7 @@ class Floor(val dungeon: Dungeon, val number: Int) : Listener {
 	
 	fun createRooms(rings: Int) {
 		val rooms = HashMap<Pair<Int, Int>, Room>()
-		rooms[Pair(0, 0)] = createRoom(0, 0, 0)
+		rooms[Pair(offsetX, 0)] = createRoom(offsetX, 0)
 		fun create(roomsSize: Int, squareSize: Int) {
 			if (rooms.size != 1)
 				rooms.clear()
@@ -188,12 +201,12 @@ class Floor(val dungeon: Dungeon, val number: Int) : Listener {
 				val x = Random.nextInt(IntRange(-squareSize, squareSize))
 				val z = Random.nextInt(IntRange(-squareSize, squareSize))
 				if (x == -squareSize || x == squareSize) {
-					if (!rooms.containsKey(Pair(x, z)))
-						rooms[Pair(x, z)] = createRoom(x, z, roomsSize * 5)
+					if (!rooms.containsKey(Pair(x + offsetX, z)))
+						rooms[Pair(x + offsetX, z)] = createRoom(x + offsetX, z)
 					
 				} else if (z == -squareSize || z == squareSize) {
-					if (!rooms.containsKey(Pair(x, z)))
-						rooms[Pair(x, z)] = createRoom(x, z, roomsSize * 5)
+					if (!rooms.containsKey(Pair(x + offsetX, z)))
+						rooms[Pair(x + offsetX, z)] = createRoom(x + offsetX, z)
 				}
 			}
 			for (roomEntry in rooms) {
@@ -204,20 +217,53 @@ class Floor(val dungeon: Dungeon, val number: Int) : Listener {
 		for (i in 1..rings) {
 			create((i * 4) + 2 + (if (i == 1) 1 else 0) + (if (i >= 4) 2 else 0), i)
 		}
+		if (createCheckpoints) {
+			for (i in 1..3) {
+				val size = rings + 1
+				var found = false
+				do {
+					var rand = when (Random.nextInt(0, 4)) {
+						0 -> {
+							size to Random.nextInt(-(size - 1) until size)
+						}
+						1 -> {
+							Random.nextInt(-(size - 1) until size) to -size
+						}
+						2 -> {
+							-size to Random.nextInt(-(size - 1) until size)
+						}
+						else -> {
+							Random.nextInt(-(size - 1) until size) to size
+						}
+					}
+					rand = rand.first + offsetX to rand.second
+					if (roomExistsAroundWithin(rand.first, rand.second, (size - 1), size - 1) && getRoom(rand.first, rand.second) == null) {
+						found = true
+						rooms[rand] = createRoom(rand.first, rand.second, true)
+						println("created checkpoint - ${rooms[rand]!!.x} + ${rooms[rand]!!.z}")
+					}
+				} while (!found)
+			}
+			for (roomEntry in rooms) {
+				this.rooms.add(roomEntry.value)
+			}
+		}
+		
+		
 		
 		for (room in this.rooms) {
 			room.createDoors()
 		}
 	}
 	
-	fun createRoom(x: Int, z: Int, delay: Int): Room {
+	private fun createRoom(x: Int, z: Int, isCheckpoint: Boolean = false): Room {
 		val pfbIndex: Int = (Math.random() * (Constants.PREFAB_SIZE * Constants.PREFAB_SIZE)).toInt()
-		val room = Room(this, x, z, pfbIndex)
-		room.create(delay)
+		val room = Room(this, x, z, pfbIndex, isCheckpoint)
+		room.create()
 		return room
 	}
 	
-	fun roomExists(x: Int, z: Int): Boolean {
+	private fun roomExists(x: Int, z: Int): Boolean {
 		for (room in rooms) {
 			if (room.x == x && room.z == z)
 				return true
@@ -231,7 +277,7 @@ class Floor(val dungeon: Dungeon, val number: Int) : Listener {
 	
 	fun teleportPlayer(player: Player) {
 		var found = false
-		val room = getRoom(0, 0)!!
+		val room = getRoom(offsetX, 0)!!
 		val chunk = room.getChunk()
 		do {
 			val rand = getRandomSpawn()
@@ -252,7 +298,7 @@ class Floor(val dungeon: Dungeon, val number: Int) : Listener {
 	fun roomExistsAroundWithin(x: Int, z: Int, x2: Int, z2: Int): Boolean {
 		fun roomCheck(x: Int, z: Int): Boolean {
 			if (roomExists(x, z)) {
-				if (x <= x2 && x >= -x2) {
+				if (x <= x2 + offsetX && x >= -x2 + offsetX) {
 					if (z <= z2 && z >= -z2) {
 						return true
 					}

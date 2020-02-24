@@ -6,6 +6,7 @@ import dev.dungeoncrawler.command.SpawnCommand
 import dev.dungeoncrawler.data.ConfigurationManager
 import dev.dungeoncrawler.data.PlayerDataManager
 import dev.dungeoncrawler.dungeon.Dungeon
+import dev.dungeoncrawler.dungeon.SetCommand
 import dev.dungeoncrawler.handler.*
 import org.bukkit.Bukkit
 import org.bukkit.event.Listener
@@ -62,5 +63,6 @@ class DungeonCrawler : JavaPlugin() {
 		SpawnCommand(this)
 		BalanceCommand(playerDataManager)
 		PartyCommand(playerDataManager)
+		SetCommand(playerDataManager)
 	}
 }

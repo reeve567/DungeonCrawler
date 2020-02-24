@@ -7,6 +7,8 @@ authors:
 commands:
   spawn:
     permission: dungeoncrawler.spawn
+  set:
+    permission: dungeoncrwaler.admin
   balance:
     aliases:
       - bal
