@@ -127,7 +127,7 @@ class Floor(val dungeon: Dungeon, val number: Int) : Listener {
 			}
 		}
 	}
-	
+
 	@EventHandler
 	fun chestCloseEvent(e: InventoryCloseEvent) {
 		if (e.inventory.type == InventoryType.CHEST) {

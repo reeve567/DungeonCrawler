@@ -23,7 +23,10 @@ class GamePortalHandler(val playerDataManager: PlayerDataManager, val dungeon: D
 						if (playerData.highestFloor == 0) {
 							playerData.highestFloor = 1
 						}
-						dungeon.floors[playerData.highestFloor - 1]?.teleportPlayer(e.player)
+						if (playerData.party != null) {
+							dungeon.floors[playerData.party!!.lowestFloor - 1]?.teleportPlayer(e.player)
+						} else dungeon.floors[playerData.highestFloor - 1]?.teleportPlayer(e.player)
+
 					}
 				}
 			}
