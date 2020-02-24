@@ -6,10 +6,7 @@ import dev.dungeoncrawler.command.SpawnCommand
 import dev.dungeoncrawler.data.ConfigurationManager
 import dev.dungeoncrawler.data.PlayerDataManager
 import dev.dungeoncrawler.dungeon.Dungeon
-import dev.dungeoncrawler.handler.BankHandler
-import dev.dungeoncrawler.handler.FoodHandler
-import dev.dungeoncrawler.handler.GamePortalHandler
-import dev.dungeoncrawler.handler.JoinLeaveHandler
+import dev.dungeoncrawler.handler.*
 import org.bukkit.Bukkit
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
@@ -40,7 +37,7 @@ class DungeonCrawler : JavaPlugin() {
 				JoinLeaveHandler(this, playerDataManager),
 				BankHandler(playerDataManager),
 				GamePortalHandler(playerDataManager, dungeon!!),
-				FoodHandler()
+				GeneralHandler(playerDataManager)
 		)
 		
 		loadCommands()

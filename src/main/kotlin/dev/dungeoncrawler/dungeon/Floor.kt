@@ -1,6 +1,7 @@
 package dev.dungeoncrawler.dungeon
 
 import dev.dungeoncrawler.Constants
+import dev.dungeoncrawler.extensions.dropGold
 import dev.dungeoncrawler.extensions.isSafe
 import dev.dungeoncrawler.utility.item
 import dev.dungeoncrawler.utility.itemMeta
@@ -23,13 +24,13 @@ import kotlin.random.Random
 import kotlin.random.nextInt
 
 class Floor(val dungeon: Dungeon, val number: Int) : Listener {
-
+	
 	val world: World = Bukkit.getWorld("world")
 	private val rooms: ArrayList<Room> = ArrayList()
 	private val visited = HashMap<UUID, HashSet<Pair<Int, Int>>>()
 	private val left = HashMap<UUID, Int>()
 	private val mobs = HashMap<UUID, UUID>()
-
+	
 	@EventHandler
 	fun onChangeChunk(e: PlayerMoveEvent) {
 		if (e.to.chunk != e.from.chunk) {
@@ -57,7 +58,7 @@ class Floor(val dungeon: Dungeon, val number: Int) : Listener {
 									Bukkit.getScheduler().scheduleSyncDelayedTask(dungeon.plugin, {
 										firework.playEffect(EntityEffect.FIREWORK_EXPLODE)
 									}, 1)
-
+									
 									val chest = block.state as Chest
 									val lootCount = Random.nextInt(IntRange(Constants.CHEST_MIN_LOOT, Constants.CHEST_MAX_LOOT))
 									for (i in 0 until lootCount) {
@@ -72,10 +73,10 @@ class Floor(val dungeon: Dungeon, val number: Int) : Listener {
 								}
 							}
 						} while (!found)
-
+						
 					}
 				}
-
+				
 				fun spawnMobs() {
 					val amount = Random.nextInt(IntRange(Constants.MOB_SPAWN_MIN, Constants.MOB_SPAWN_MAX))
 					for (i in 0 until amount) {
@@ -110,7 +111,7 @@ class Floor(val dungeon: Dungeon, val number: Int) : Listener {
 					left[e.player.uniqueId] = amount
 					room.createFakeDoors(e.player)
 				}
-
+				
 				if (pair != Pair(0, 0)) {
 					if (visited.containsKey(e.player.uniqueId)) {
 						if (!visited[e.player.uniqueId]!!.contains(pair)) {
@@ -127,7 +128,7 @@ class Floor(val dungeon: Dungeon, val number: Int) : Listener {
 			}
 		}
 	}
-
+	
 	@EventHandler
 	fun chestCloseEvent(e: InventoryCloseEvent) {
 		if (e.inventory.type == InventoryType.CHEST) {
@@ -140,7 +141,7 @@ class Floor(val dungeon: Dungeon, val number: Int) : Listener {
 			}
 		}
 	}
-
+	
 	@EventHandler
 	fun onMobDeath(e: EntityDeathEvent) {
 		if (e.entity.type == EntityType.SKELETON || e.entity.type == EntityType.ZOMBIE) {
@@ -156,27 +157,27 @@ class Floor(val dungeon: Dungeon, val number: Int) : Listener {
 						mobs.remove(e.entity.uniqueId)
 					}
 				}
-
-				dungeon.playerDataManager.addBalance(killer, (Random.nextInt(6..12) * number.toDouble().pow(2.0)).toInt())
+				killer.dropGold((Random.nextInt(6..12) * number.toDouble().pow(2.0)).toInt(), e.entity.location)
+				//dungeon.playerDataManager.addBalance(killer, (Random.nextInt(6..12) * number.toDouble().pow(2.0)).toInt())
 			}
 		}
 	}
-
+	
 	fun destroy() {
 		for (room in rooms) {
 			room.destroy()
 		}
 		rooms.clear()
 	}
-
+	
 	// devote themselves to a direction and make most chance go to straight
 	// maybe pass on chance value and make it smaller if it's going in another direction from straight
-
+	
 	// generate in squares
 	// first square of 8 - generate 6
 	// second square of 18 - generate 10 & keep generating if not next to one in first square yet
 	// etc
-
+	
 	fun createRooms(rings: Int) {
 		val rooms = HashMap<Pair<Int, Int>, Room>()
 		rooms[Pair(0, 0)] = createRoom(0, 0, 0)
@@ -189,7 +190,7 @@ class Floor(val dungeon: Dungeon, val number: Int) : Listener {
 				if (x == -squareSize || x == squareSize) {
 					if (!rooms.containsKey(Pair(x, z)))
 						rooms[Pair(x, z)] = createRoom(x, z, roomsSize * 5)
-
+					
 				} else if (z == -squareSize || z == squareSize) {
 					if (!rooms.containsKey(Pair(x, z)))
 						rooms[Pair(x, z)] = createRoom(x, z, roomsSize * 5)
@@ -199,23 +200,23 @@ class Floor(val dungeon: Dungeon, val number: Int) : Listener {
 				this.rooms.add(roomEntry.value)
 			}
 		}
-
+		
 		for (i in 1..rings) {
 			create((i * 4) + 2 + (if (i == 1) 1 else 0) + (if (i >= 4) 2 else 0), i)
 		}
-
+		
 		for (room in this.rooms) {
 			room.createDoors()
 		}
 	}
-
+	
 	fun createRoom(x: Int, z: Int, delay: Int): Room {
 		val pfbIndex: Int = (Math.random() * (Constants.PREFAB_SIZE * Constants.PREFAB_SIZE)).toInt()
 		val room = Room(this, x, z, pfbIndex)
 		room.create(delay)
 		return room
 	}
-
+	
 	fun roomExists(x: Int, z: Int): Boolean {
 		for (room in rooms) {
 			if (room.x == x && room.z == z)
@@ -223,11 +224,11 @@ class Floor(val dungeon: Dungeon, val number: Int) : Listener {
 		}
 		return false
 	}
-
+	
 	private fun getRoom(x: Int, z: Int): Room? {
 		return rooms.find { it.x == x && it.z == z }
 	}
-
+	
 	fun teleportPlayer(player: Player) {
 		var found = false
 		val room = getRoom(0, 0)!!
@@ -243,11 +244,11 @@ class Floor(val dungeon: Dungeon, val number: Int) : Listener {
 			}
 		} while (!found)
 	}
-
+	
 	private fun getRandomSpawn(): Pair<Int, Int> {
-		return Pair(Random.nextInt(1..15), Random.nextInt(1..15))
+		return Pair(Random.nextInt(3..13), Random.nextInt(3..13))
 	}
-
+	
 	fun roomExistsAroundWithin(x: Int, z: Int, x2: Int, z2: Int): Boolean {
 		fun roomCheck(x: Int, z: Int): Boolean {
 			if (roomExists(x, z)) {
@@ -259,7 +260,7 @@ class Floor(val dungeon: Dungeon, val number: Int) : Listener {
 			}
 			return false
 		}
-
+		
 		if (roomCheck(x + 1, z)) return true
 		if (roomCheck(x - 1, z)) return true
 		if (roomCheck(x, z + 1)) return true
