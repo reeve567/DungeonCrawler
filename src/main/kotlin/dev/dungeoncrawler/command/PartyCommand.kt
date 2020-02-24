@@ -26,7 +26,7 @@ class PartyCommand(private val playerDataManager: PlayerDataManager) : CommandEx
 			} else if (args[0].equals("invite", true)) {
 				if (args.size >= 2) {
 					val target = Bukkit.getPlayer(args[1])
-					if (target != null) {
+					if (target != null && target.uniqueId != player.uniqueId) {
 						createPartyIfNecessary(player, playerData)
 						if (playerData.party!!.leader.uniqueId != player.uniqueId) {
 							player.sendMessage("§cYou must be the party leader to invite someone.")
@@ -36,7 +36,7 @@ class PartyCommand(private val playerDataManager: PlayerDataManager) : CommandEx
 			} else if (args[0].equals("kick", true)) {
 				if (args.size >= 2) {
 					val target = Bukkit.getPlayer(args[1])
-					if (target != null) {
+					if (target != null && target.uniqueId != player.uniqueId) {
 						createPartyIfNecessary(player, playerData)
 						if (playerData.party!!.leader.uniqueId != player.uniqueId) {
 							player.sendMessage("§cYou must be the party leader to invite someone.")
@@ -66,7 +66,7 @@ class PartyCommand(private val playerDataManager: PlayerDataManager) : CommandEx
 			} else if (args[0].equals("join", true)) {
 				if (args.size >= 2) {
 					val target = Bukkit.getPlayer(args[1])
-					if (target != null) {
+					if (target != null && target.uniqueId != player.uniqueId) {
 						val party = playerDataManager.playerData[target.uniqueId]!!.party
 						if (party != null) {
 							if (party.invited.contains(player)) {
@@ -75,6 +75,14 @@ class PartyCommand(private val playerDataManager: PlayerDataManager) : CommandEx
 						} else player.sendMessage("§cParty does not exist.")
 					} else player.sendMessage("§cPlayer not found.")
 				} else player.sendMessage("§cPlease include a player to join.")
+			} else if (args[0].equals("list", true)) {
+				val party = playerData.party
+				if (party != null) {
+					player.sendMessage("§6Party:")
+					player.sendMessage("§7Leader: ${party.leader.name}")
+					player.sendMessage("§7Members:")
+					party.members.forEach { player.sendMessage("§6${it.name}") }
+				} else player.sendMessage("§cYou are not in a party.")
 			}
 		} else {
 			sendHelp(player)
@@ -88,7 +96,8 @@ class PartyCommand(private val playerDataManager: PlayerDataManager) : CommandEx
 				"§7/§6party join <user>",
 				"§7/§6party invite <user>",
 				"§7/§6party kick <user>",
-				"§7/§6party leave"
+				"§7/§6party leave",
+				"§7/§6party list"
 		).toTypedArray())
 	}
 	

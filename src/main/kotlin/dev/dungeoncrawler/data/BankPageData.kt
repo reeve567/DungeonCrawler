@@ -31,7 +31,6 @@ class BankPageData(var items: HashMap<Int, ItemStack> = HashMap()) {
 			}
 
 			clickableItem {
-				println("$currentPage - ${playerData.bankData.pages.size}")
 				if (currentPage == playerData.bankData.pages.size && currentPage < 5) {
 					val cost = (currentPage + 1).toDouble().pow(2) * 100
 					// buy option
