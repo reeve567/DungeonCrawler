@@ -1,7 +1,8 @@
 package dev.dungeoncrawler.command
 
 import dev.dungeoncrawler.data.PlayerDataManager
-import dev.dungeoncrawler.pets.Pet
+import dev.dungeoncrawler.npcs.pets.Pet
+import dev.dungeoncrawler.npcs.pets.PetType
 import dev.dungeoncrawler.utility.*
 import org.bukkit.Bukkit
 import org.bukkit.Material
@@ -21,8 +22,8 @@ class PetCommand(val playerDataManager: PlayerDataManager) : CommandExecutor {
 		val playerData = playerDataManager.playerData[player.uniqueId]!!
 		if (playerData.pet == null || (playerData.pet != null && !playerData.pet!!.summoned)) {
 			gui(9) {
-				for (i in Pet.Type.values().indices) {
-					val type = Pet.Type.values()[i]
+				for (i in PetType.values().indices) {
+					val type = PetType.values()[i]
 					var level = 1
 					var exp = 0L
 					if (playerData.petLevels.levels.containsKey(type.name)) {

@@ -1,9 +1,8 @@
 package dev.dungeoncrawler.data
 
 import dev.dungeoncrawler.dungeon.Party
-import dev.dungeoncrawler.pets.Pet
+import dev.dungeoncrawler.npcs.pets.Pet
 import java.util.*
-import kotlin.collections.HashMap
 
 data class PlayerData(
 		val id: UUID,
