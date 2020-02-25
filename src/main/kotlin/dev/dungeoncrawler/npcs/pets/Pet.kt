@@ -15,15 +15,20 @@ import org.bukkit.event.player.PlayerTeleportEvent
 import org.bukkit.metadata.FixedMetadataValue
 import org.bukkit.potion.PotionEffect
 import org.bukkit.potion.PotionEffectType
+import java.util.*
+import kotlin.collections.HashMap
 
 class Pet(val owner: Player, val type: PetType, var playerData: PlayerData) : Listener {
 	val entity: ArmorStand = Bukkit.getWorld("world").spawnEntity(owner.location, EntityType.ARMOR_STAND) as ArmorStand
 	private val zombie: Zombie = Bukkit.getWorld("world").spawnEntity(owner.location, EntityType.ZOMBIE) as Zombie
 	var summoned = true
-	private var level = 1
-	private var exp = 0L
+	var level = 1
+	var exp = 0L
 
 	companion object {
+		val pets = HashMap<UUID, UUID>()
+		val followers = HashMap<UUID, UUID>()
+
 		fun getExpToLevel(level: Int): Long? {
 			return when (level) {
 				10 -> null
@@ -50,11 +55,7 @@ class Pet(val owner: Player, val type: PetType, var playerData: PlayerData) : Li
 				if (zombie.location.distance(owner.location) > 100) {
 					// too far
 					owner.sendMessage("§6You pet got too far away and returned.")
-					zombie.remove()
-					entity.remove()
-					summoned = false
-
-					saveLevels()
+					remove()
 				} else {
 					var closestEntity: LivingEntity? = null
 					var distance = Double.MAX_VALUE
@@ -84,8 +85,7 @@ class Pet(val owner: Player, val type: PetType, var playerData: PlayerData) : Li
 				}
 			} else {
 				if (!zombie.isDead) {
-					zombie.remove()
-					entity.remove()
+					remove()
 				}
 			}
 		}, type.attackSpeed, type.attackSpeed)
@@ -96,6 +96,18 @@ class Pet(val owner: Player, val type: PetType, var playerData: PlayerData) : Li
 				entity.teleport(zombie.location.setDirection(owner.location.toVector().subtract(entity.location.toVector())).add(0.0, 1.5, 0.0), PlayerTeleportEvent.TeleportCause.PLUGIN)
 			}
 		}, 2L, 2L)
+	}
+
+	fun remove() {
+		levelUp()
+		saveLevels()
+
+		pets.remove(entity.uniqueId)
+		followers.remove(zombie.uniqueId)
+
+		zombie.remove()
+		entity.remove()
+		summoned = false
 	}
 
 	fun saveLevels() {
@@ -128,6 +140,7 @@ class Pet(val owner: Player, val type: PetType, var playerData: PlayerData) : Li
 
 		entity.setMetadata("pet", FixedMetadataValue(DungeonCrawler.instance, owner.uniqueId.toString()))
 		entity.equipment.helmet = type.getHead()
+		pets[entity.uniqueId] = owner.uniqueId
 	}
 
 	private fun setFollowerEntity() {
@@ -135,17 +148,18 @@ class Pet(val owner: Player, val type: PetType, var playerData: PlayerData) : Li
 		(zombie as CraftZombie).handle.b(true)
 		zombie.addPotionEffect(PotionEffect(PotionEffectType.INVISIBILITY, Int.MAX_VALUE, 1, false, false))
 		zombie.setMetadata("follower", FixedMetadataValue(DungeonCrawler.instance, owner.uniqueId.toString()))
+		pets[zombie.uniqueId] = owner.uniqueId
 	}
 
 	@EventHandler(priority = EventPriority.HIGH)
 	fun onDamage(e: EntityDamageEvent) {
-		if (e.entity.hasMetadata("pet") || e.entity.hasMetadata("follower"))
+		if (e.entity.hasMetadata("pet") || e.entity.hasMetadata("follower") || followers.containsKey(e.entity.uniqueId) || pets.containsKey(e.entity.uniqueId))
 			e.isCancelled = true
 	}
 
 	@EventHandler
 	fun onPlayerDamaged(e: EntityDamageByEntityEvent) {
-		if (e.damager.hasMetadata("follower"))
+		if (e.damager.hasMetadata("follower") || followers.containsKey(e.damager.uniqueId))
 			e.isCancelled = true
 	}
 
