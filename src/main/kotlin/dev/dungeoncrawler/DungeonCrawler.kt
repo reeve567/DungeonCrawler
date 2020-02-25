@@ -1,12 +1,9 @@
 package dev.dungeoncrawler
 
-import dev.dungeoncrawler.command.BalanceCommand
-import dev.dungeoncrawler.command.PartyCommand
-import dev.dungeoncrawler.command.SpawnCommand
+import dev.dungeoncrawler.command.*
 import dev.dungeoncrawler.data.ConfigurationManager
 import dev.dungeoncrawler.data.PlayerDataManager
 import dev.dungeoncrawler.dungeon.Dungeon
-import dev.dungeoncrawler.command.PetCommand
 import dev.dungeoncrawler.dungeon.SetCommand
 import dev.dungeoncrawler.extensions.sendHeaderAndFooter
 import dev.dungeoncrawler.extensions.sendScoreboardUpdate
@@ -90,6 +87,7 @@ class DungeonCrawler : JavaPlugin() {
 		PartyCommand(playerDataManager)
 		SetCommand(playerDataManager)
 		PetCommand(playerDataManager)
+		LootCommand()
 	}
 	
 	private fun loadLoot() {

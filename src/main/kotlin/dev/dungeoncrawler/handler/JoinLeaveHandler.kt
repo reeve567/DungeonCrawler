@@ -6,6 +6,7 @@ import dev.dungeoncrawler.data.*
 import dev.dungeoncrawler.extensions.sendScoreboard
 import dev.dungeoncrawler.extensions.updateTeam
 import org.bukkit.Bukkit
+import org.bukkit.GameMode
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
@@ -25,6 +26,7 @@ class JoinLeaveHandler(private val dungeonCrawler: DungeonCrawler, private val p
 		}, 5)
 		
 		e.player.updateTeam()
+		e.player.gameMode = GameMode.ADVENTURE
 	}
 	
 	@EventHandler

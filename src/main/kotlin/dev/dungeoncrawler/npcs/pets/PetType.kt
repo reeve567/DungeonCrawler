@@ -13,6 +13,10 @@ enum class PetType(val baseDamage: Double, val attackSpeed: Long, val petName: S
 		override fun attack(pet: Pet, entity: LivingEntity) {
 		}
 	},
+	FOX(4.0,18,"Fox",3,"Ready for business.","eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWVjMjg0NDczMmIyOTA2M2Q0ODVmNTM1NGQ0YTIyYzc2MzAxZmU2YzA4ZjkwYWVkNjZjMWViZGQ4ZDQzMzljMyJ9fX0=") {
+		override fun attack(pet: Pet, entity: LivingEntity) {
+		}
+	},
 	WATER_ORB(10.0, 20, "Water Orb", 2, "... not really a pet", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTY3OTliZmFhM2EyYzYzYWQ4NWRkMzc4ZTY2ZDU3ZDlhOTdhM2Y4NmQwZDlmNjgzYzQ5ODYzMmY0ZjVjIn19fQ==") {
 		override fun attack(pet: Pet, entity: LivingEntity) {
 		}

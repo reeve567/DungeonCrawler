@@ -9,6 +9,8 @@ commands:
     permission: dungeoncrawler.spawn
   set:
     permission: dungeoncrawler.admin
+  loot:
+    permission: dungeoncrawler.loot
   pet:
     permission: dungeoncrawler.pet
   balance:
