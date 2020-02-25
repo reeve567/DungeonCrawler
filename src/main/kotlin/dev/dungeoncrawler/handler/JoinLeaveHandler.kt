@@ -3,6 +3,7 @@ package dev.dungeoncrawler.handler
 import dev.dungeoncrawler.Constants
 import dev.dungeoncrawler.DungeonCrawler
 import dev.dungeoncrawler.data.*
+import dev.dungeoncrawler.extensions.sendScoreboard
 import dev.dungeoncrawler.extensions.updateTeam
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
@@ -20,6 +21,7 @@ class JoinLeaveHandler(private val dungeonCrawler: DungeonCrawler, private val p
 		}
 		Bukkit.getScheduler().scheduleSyncDelayedTask(dungeonCrawler, {
 			e.player.teleport(Constants.SPAWN_LOCATION)
+			e.player.sendScoreboard(playerDataManager.playerData[e.player.uniqueId]!!)
 		}, 5)
 		
 		e.player.updateTeam()
