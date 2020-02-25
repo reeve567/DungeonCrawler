@@ -7,7 +7,7 @@ import org.bukkit.*
 import org.bukkit.craftbukkit.v1_8_R3.CraftChunk
 import org.bukkit.entity.Player
 
-class Room(private val floor: Floor, val x: Int, val z: Int, private val pfbIndex: Int, val isCheckpoint: Boolean = false) {
+class Room( val floor: Floor, val x: Int, val z: Int, private val pfbIndex: Int, val isCheckpoint: Boolean = false) {
 	fun create() {
 		val prefab: Chunk = if (isCheckpoint) {
 			println("checkpoint")

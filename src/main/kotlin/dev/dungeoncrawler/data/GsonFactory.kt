@@ -6,6 +6,7 @@ import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonToken
 import com.google.gson.stream.JsonWriter
+import dev.dungeoncrawler.data.adapters.PetLevelDataTypeAdapter
 import net.minecraft.server.v1_8_R3.MojangsonParseException
 import net.minecraft.server.v1_8_R3.MojangsonParser
 import net.minecraft.server.v1_8_R3.NBTBase
@@ -48,6 +49,7 @@ object GsonFactory {
 		get() {
 			if (field == null) field = GsonBuilder().addSerializationExclusionStrategy(ExposeExlusion())
 					.addDeserializationExclusionStrategy(ExposeExlusion())
+					.registerTypeAdapter(PetLevelData::class.java, PetLevelDataTypeAdapter())
 					.registerTypeHierarchyAdapter(ItemStack::class.java, ItemStackGsonAdapter())
 					.registerTypeAdapter(PotionEffect::class.java, PotionEffectGsonAdapter())
 					.registerTypeAdapter(Location::class.java, LocationGsonAdapter())
@@ -70,6 +72,7 @@ object GsonFactory {
 		get() {
 			if (field == null) field = GsonBuilder().addSerializationExclusionStrategy(ExposeExlusion())
 					.addDeserializationExclusionStrategy(ExposeExlusion())
+					.registerTypeAdapter(PetLevelData::class.java, PetLevelDataTypeAdapter())
 					.registerTypeHierarchyAdapter(ItemStack::class.java, ItemStackGsonAdapter())
 					.registerTypeAdapter(PotionEffect::class.java, PotionEffectGsonAdapter())
 					.registerTypeAdapter(Location::class.java, LocationGsonAdapter())
@@ -79,7 +82,7 @@ object GsonFactory {
 			return field
 		}
 		private set
-
+	
 	/**
 	 * Creates a new instance of Gson for use anywhere
 	 *
@@ -96,7 +99,7 @@ object GsonFactory {
 		if (prettyPrinting) builder.setPrettyPrinting()
 		return builder.create()
 	}
-
+	
 	private fun recursiveSerialization(o: ConfigurationSerializable): MutableMap<String, Any> {
 		val originalMap = o.serialize()
 		val map: MutableMap<String, Any> = HashMap()
@@ -111,7 +114,7 @@ object GsonFactory {
 		map[CLASS_KEY] = ConfigurationSerialization.getAlias(o.javaClass)
 		return map
 	}
-
+	
 	private fun recursiveDoubleToInteger(originalMap: Map<String, Any?>?): Map<String, Any?> {
 		val map: MutableMap<String, Any?> = HashMap()
 		for ((key, o) in originalMap!!) {
@@ -131,11 +134,11 @@ object GsonFactory {
 		}
 		return map
 	}
-
+	
 	private fun nbtToString(base: NBTBase): String {
 		return base.toString().replace(",}", "}").replace(",]", "]").replace("[0-9]+\\:".toRegex(), "")
 	}
-
+	
 	private fun removeSlot(item: ItemStack?): net.minecraft.server.v1_8_R3.ItemStack? {
 		if (item == null) return null
 		val nmsi = CraftItemStack.asNMSCopy(item) ?: return null
@@ -146,7 +149,7 @@ object GsonFactory {
 		}
 		return nmsi
 	}
-
+	
 	private fun removeSlotNBT(item: ItemStack?): ItemStack? {
 		if (item == null) return null
 		val nmsi = CraftItemStack.asNMSCopy(item) ?: return null
@@ -157,11 +160,11 @@ object GsonFactory {
 		}
 		return CraftItemStack.asBukkitCopy(nmsi)
 	}
-
+	
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(AnnotationTarget.FIELD)
 	annotation class Ignore
-
+	
 	private class ExposeExlusion : ExclusionStrategy {
 		override fun shouldSkipField(fieldAttributes: FieldAttributes): Boolean {
 			val ignore = fieldAttributes.getAnnotation(Ignore::class.java)
@@ -169,12 +172,12 @@ object GsonFactory {
 			val expose = fieldAttributes.getAnnotation(Expose::class.java)
 			return expose != null && (!expose.serialize || !expose.deserialize)
 		}
-
+		
 		override fun shouldSkipClass(aClass: Class<*>?): Boolean {
 			return false
 		}
 	}
-
+	
 	private class NewItemStackAdapter : TypeAdapter<ItemStack?>() {
 		@Throws(IOException::class)
 		override fun write(jsonWriter: JsonWriter, itemStack: ItemStack?) {
@@ -204,7 +207,7 @@ object GsonFactory {
 				ex.printStackTrace()
 			}
 		}
-
+		
 		@Throws(IOException::class)
 		override fun read(jsonReader: JsonReader): ItemStack? {
 			if (jsonReader.peek() == JsonToken.NULL) {
@@ -233,7 +236,7 @@ object GsonFactory {
 			return CraftItemStack.asBukkitCopy(item)
 		}
 	}
-
+	
 	private class ItemStackGsonAdapter : TypeAdapter<ItemStack?>() {
 		@Throws(IOException::class)
 		override fun write(jsonWriter: JsonWriter, itemStack: ItemStack?) {
@@ -243,7 +246,7 @@ object GsonFactory {
 			}
 			jsonWriter.value(getRaw(removeSlotNBT(itemStack)))
 		}
-
+		
 		@Throws(IOException::class)
 		override fun read(jsonReader: JsonReader): ItemStack? {
 			if (jsonReader.peek() == JsonToken.NULL) {
@@ -252,7 +255,7 @@ object GsonFactory {
 			}
 			return fromRaw(jsonReader.nextString())
 		}
-
+		
 		private fun getRaw(item: ItemStack?): String {
 			val serial = item!!.serialize()
 			if (serial["meta"] != null) {
@@ -272,7 +275,7 @@ object GsonFactory {
 			}
 			return g.toJson(serial)
 		}
-
+		
 		private fun fromRaw(raw: String): ItemStack? {
 			val keys = g.fromJson<MutableMap<String, Any?>>(raw, seriType)
 			if (keys["amount"] != null) {
@@ -295,12 +298,12 @@ object GsonFactory {
 			}
 			return item
 		}
-
+		
 		companion object {
 			private val seriType = object : TypeToken<Map<String?, Any?>?>() {}.type
 		}
 	}
-
+	
 	private class PotionEffectGsonAdapter : TypeAdapter<PotionEffect?>() {
 		@Throws(IOException::class)
 		override fun write(jsonWriter: JsonWriter, potionEffect: PotionEffect?) {
@@ -310,7 +313,7 @@ object GsonFactory {
 			}
 			jsonWriter.value(getRaw(potionEffect))
 		}
-
+		
 		@Throws(IOException::class)
 		override fun read(jsonReader: JsonReader): PotionEffect? {
 			if (jsonReader.peek() == JsonToken.NULL) {
@@ -319,17 +322,17 @@ object GsonFactory {
 			}
 			return fromRaw(jsonReader.nextString())
 		}
-
+		
 		private fun getRaw(potion: PotionEffect): String {
 			val serial = potion.serialize()
 			return g.toJson(serial)
 		}
-
+		
 		private fun fromRaw(raw: String): PotionEffect {
 			val keys = g.fromJson<Map<String, Any>>(raw, seriType)
 			return PotionEffect(PotionEffectType.getById((keys[TYPE] as Double?)!!.toInt()), (keys[DURATION] as Double?)!!.toInt(), (keys[AMPLIFIER] as Double?)!!.toInt(), (keys[AMBIENT] as Boolean?)!!)
 		}
-
+		
 		companion object {
 			private val seriType = object : TypeToken<Map<String?, Any?>?>() {}.type
 			private const val TYPE = "effect"
@@ -338,7 +341,7 @@ object GsonFactory {
 			private const val AMBIENT = "ambient"
 		}
 	}
-
+	
 	private class LocationGsonAdapter : TypeAdapter<Location?>() {
 		@Throws(IOException::class)
 		override fun write(jsonWriter: JsonWriter, location: Location?) {
@@ -348,7 +351,7 @@ object GsonFactory {
 			}
 			jsonWriter.value(getRaw(location))
 		}
-
+		
 		@Throws(IOException::class)
 		override fun read(jsonReader: JsonReader): Location? {
 			if (jsonReader.peek() == JsonToken.NULL) {
@@ -357,7 +360,7 @@ object GsonFactory {
 			}
 			return fromRaw(jsonReader.nextString())
 		}
-
+		
 		private fun getRaw(location: Location): String? {
 			val serial: MutableMap<String?, Any?> = HashMap()
 			serial[UUID] = location.world.uid.toString()
@@ -368,13 +371,13 @@ object GsonFactory {
 			serial[PITCH] = location.pitch.toString()
 			return g.toJson(serial)
 		}
-
+		
 		private fun fromRaw(raw: String?): Location {
 			val keys = g.fromJson<Map<String?, Any?>?>(raw, seriType)
 			val w = Bukkit.getWorld(java.util.UUID.fromString(keys!![UUID] as String?))
 			return Location(w, (keys[X] as String).toDouble(), (keys[Y] as String).toDouble(), (keys[Z] as String).toDouble(), (keys[YAW] as String).toFloat(), (keys[PITCH] as String).toFloat())
 		}
-
+		
 		companion object {
 			private val seriType = object : TypeToken<Map<String?, Any?>?>() {}.type
 			private val UUID: String? = "uuid"
@@ -385,7 +388,7 @@ object GsonFactory {
 			private val PITCH: String? = "pitch"
 		}
 	}
-
+	
 	private class DateGsonAdapter : TypeAdapter<Date?>() {
 		@Throws(IOException::class)
 		override fun write(jsonWriter: JsonWriter?, date: Date?) {
@@ -395,7 +398,7 @@ object GsonFactory {
 			}
 			jsonWriter!!.value(date.time)
 		}
-
+		
 		@Throws(IOException::class)
 		override fun read(jsonReader: JsonReader?): Date? {
 			if (jsonReader!!.peek() == JsonToken.NULL) {

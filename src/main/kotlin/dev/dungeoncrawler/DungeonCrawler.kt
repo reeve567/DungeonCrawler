@@ -1,31 +1,29 @@
 package dev.dungeoncrawler
 
-import com.mojang.authlib.properties.Property
 import dev.dungeoncrawler.command.BalanceCommand
 import dev.dungeoncrawler.command.PartyCommand
 import dev.dungeoncrawler.command.SpawnCommand
 import dev.dungeoncrawler.data.ConfigurationManager
 import dev.dungeoncrawler.data.PlayerDataManager
 import dev.dungeoncrawler.dungeon.Dungeon
+import dev.dungeoncrawler.command.PetCommand
 import dev.dungeoncrawler.dungeon.SetCommand
-import dev.dungeoncrawler.extensions.asCraftPlayer
 import dev.dungeoncrawler.extensions.sendHeaderAndFooter
 import dev.dungeoncrawler.extensions.updateTeam
 import dev.dungeoncrawler.handler.BankHandler
 import dev.dungeoncrawler.handler.GamePortalHandler
 import dev.dungeoncrawler.handler.GeneralHandler
 import dev.dungeoncrawler.handler.JoinLeaveHandler
-import dev.dungeoncrawler.npcs.NonPlayerCharacter
 import org.bukkit.Bukkit
-import org.bukkit.ChatColor
-import org.bukkit.Location
+import org.bukkit.entity.ArmorStand
+import org.bukkit.entity.Zombie
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
 
 class DungeonCrawler : JavaPlugin() {
 	val playerDataManager = PlayerDataManager()
 	private val configurationManager = ConfigurationManager(playerDataManager, dataFolder)
-	private var dungeon: Dungeon? = null
+	 var dungeon: Dungeon? = null
 	
 	init {
 		instance = this
@@ -48,7 +46,7 @@ class DungeonCrawler : JavaPlugin() {
 				JoinLeaveHandler(this, playerDataManager),
 				BankHandler(playerDataManager),
 				GamePortalHandler(playerDataManager, dungeon!!),
-				GeneralHandler(playerDataManager)
+				GeneralHandler(this, playerDataManager)
 		)
 		loadCommands()
 		loadTeams()
@@ -68,6 +66,17 @@ class DungeonCrawler : JavaPlugin() {
 			player.teleport(Constants.SPAWN_LOCATION)
 		}
 		
+		Bukkit.getWorld("world").getEntitiesByClass(Zombie::class.java).forEach {
+			if (it.hasMetadata("follower")) {
+				it.remove()
+			}
+		}
+		Bukkit.getWorld("world").getEntitiesByClass(ArmorStand::class.java).forEach {
+			if (it.hasMetadata("pet")) {
+				it.remove()
+			}
+		}
+		
 		configurationManager.save()
 		dungeon?.destroy()
 	}
@@ -77,12 +86,13 @@ class DungeonCrawler : JavaPlugin() {
 		BalanceCommand(playerDataManager)
 		PartyCommand(playerDataManager)
 		SetCommand(playerDataManager)
+		PetCommand(playerDataManager)
 	}
 	
 	private fun sendTab() {
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, {
 			Bukkit.getOnlinePlayers().forEach {
-				it.sendHeaderAndFooter("§8§m«---[§r §6§lDungeonCrawler §r§8§m]---»\n§cdungeoncrawler.dev","§6Players Online: ${Bukkit.getOnlinePlayers().size}")
+				it.sendHeaderAndFooter("§8§m«---[§r §6§lDungeonCrawler §r§8§m]---»\n§cdungeoncrawler.dev", "§6Players Online: ${Bukkit.getOnlinePlayers().size}")
 			}
 		}, 20L, 20L)
 	}

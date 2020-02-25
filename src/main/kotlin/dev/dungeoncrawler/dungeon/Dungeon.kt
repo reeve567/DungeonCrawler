@@ -3,6 +3,7 @@ package dev.dungeoncrawler.dungeon
 import dev.dungeoncrawler.DungeonCrawler
 import dev.dungeoncrawler.data.PlayerDataManager
 import org.bukkit.Bukkit
+import org.bukkit.Chunk
 
 class Dungeon(val plugin: DungeonCrawler, val playerDataManager: PlayerDataManager) {
 	
@@ -19,6 +20,14 @@ class Dungeon(val plugin: DungeonCrawler, val playerDataManager: PlayerDataManag
 		for (floor in floors) {
 			floor?.createRooms(6)
 		}
+	}
+	
+	fun getRoom(x: Int, z: Int): Room? {
+		floors.forEach {
+			if (it?.getRoom(x, z) != null)
+				return it.getRoom(x, z)
+		}
+		return null
 	}
 	
 	fun destroy() {

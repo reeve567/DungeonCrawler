@@ -8,7 +8,9 @@ commands:
   spawn:
     permission: dungeoncrawler.spawn
   set:
-    permission: dungeoncrwaler.admin
+    permission: dungeoncrawler.admin
+  pet:
+    permission: dungeoncrawler.pet
   balance:
     aliases:
       - bal

@@ -25,13 +25,33 @@ import kotlin.math.pow
 import kotlin.random.Random
 import kotlin.random.nextInt
 
+fun main() {
+
+}
+
 class Floor(private val dungeon: Dungeon, private val number: Int, private val offsetX: Int, val createCheckpoints: Boolean = true) : Listener {
 	
 	val world: World = Bukkit.getWorld("world")
 	private val rooms: ArrayList<Room> = ArrayList()
 	private val visited = HashMap<UUID, HashSet<Pair<Int, Int>>>()
-	private val left = HashMap<UUID, Int>()
-	private val mobs = HashMap<UUID, UUID>()
+	val left = HashMap<UUID, Int>()
+	val mobs = HashMap<UUID, Pair<UUID, Pair<Int, Int>>>()
+	
+	init {
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(dungeon.plugin, {
+			Bukkit.getWorld("world").entities.forEach {
+				val info = mobs[it.uniqueId]
+				if (info != null) {
+					val chunk = info.second
+					if (it.location.chunk.x != chunk.first || it.location.chunk.z != chunk.second) {
+						if (it is LivingEntity) {
+							it.damage(10000000.0, Bukkit.getPlayer(info.first))
+						}
+					}
+				}
+			}
+		}, 100L, 100L)
+	}
 	
 	@EventHandler
 	fun onChangeChunk(e: PlayerMoveEvent) {
@@ -106,17 +126,17 @@ class Floor(private val dungeon: Dungeon, private val number: Int, private val o
 									when (type) {
 										1 -> {
 											val zombie = block.world.spawn(block.location.add(0.5, 1.0, 0.5), Zombie::class.java)
-											//zombie.equipment.helmet = ItemStack(Material.STONE_BUTTON)
+											zombie.equipment.helmet = ItemStack(Material.STONE_BUTTON)
 											zombie.equipment.helmetDropChance = 0f
 											zombie.target = e.player
-											mobs[zombie.uniqueId] = e.player.uniqueId
+											mobs[zombie.uniqueId] = e.player.uniqueId to pair
 										}
 										else -> {
 											val skeleton = block.world.spawn(block.location.add(0.5, 1.0, 0.5), Skeleton::class.java)
-											//skeleton.equipment.helmet = ItemStack(Material.STONE_BUTTON)
+											skeleton.equipment.helmet = ItemStack(Material.STONE_BUTTON)
 											skeleton.equipment.helmetDropChance = 0f
 											skeleton.target = e.player
-											mobs[skeleton.uniqueId] = e.player.uniqueId
+											mobs[skeleton.uniqueId] = e.player.uniqueId to pair
 										}
 									}
 								}
@@ -162,18 +182,22 @@ class Floor(private val dungeon: Dungeon, private val number: Int, private val o
 		if (e.entity.type == EntityType.SKELETON || e.entity.type == EntityType.ZOMBIE) {
 			e.droppedExp = 0
 			val killer = e.entity.killer
-			if (roomExists(killer.location.chunk.x, killer.location.chunk.z)) {
+			if (killer != null && roomExists(killer.location.chunk.x, killer.location.chunk.z)) {
 				getRoom(killer.location.chunk.x, killer.location.chunk.z)?.also { room ->
 					if (mobs.containsKey(e.entity.uniqueId)) {
-						left[mobs[e.entity.uniqueId]!!] = left[mobs[e.entity.uniqueId]!!]!! - 1
-						if (left[mobs[e.entity.uniqueId]!!]!! == 0) {
-							room.createFakeDoors(Bukkit.getPlayer(mobs[e.entity.uniqueId]!!), Material.AIR, 0)
+						left[mobs[e.entity.uniqueId]!!.first] = left[mobs[e.entity.uniqueId]!!.first]!! - 1
+						if (left[mobs[e.entity.uniqueId]!!.first]!! == 0) {
+							room.createFakeDoors(Bukkit.getPlayer(mobs[e.entity.uniqueId]!!.first), Material.AIR, 0)
 						}
 						mobs.remove(e.entity.uniqueId)
 					}
 				}
 				killer.dropGold((Random.nextInt(6..12) * number.toDouble().pow(2.0)).toInt(), e.entity.location)
 				//dungeon.playerDataManager.addBalance(killer, (Random.nextInt(6..12) * number.toDouble().pow(2.0)).toInt())
+				val playerData = dungeon.playerDataManager.playerData[killer.uniqueId]!!
+				if (playerData.pet != null) {
+					playerData.pet!!.addExp((Random.nextInt(6..12) * number.toDouble().pow(1.25)).toInt())
+				}
 			}
 		}
 	}
@@ -285,7 +309,7 @@ class Floor(private val dungeon: Dungeon, private val number: Int, private val o
 		return false
 	}
 	
-	private fun getRoom(x: Int, z: Int): Room? {
+	fun getRoom(x: Int, z: Int): Room? {
 		return rooms.find { it.x == x && it.z == z }
 	}
 	

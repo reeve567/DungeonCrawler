@@ -13,20 +13,20 @@ import org.bukkit.inventory.ItemStack
 class GUI(val size: Int = 54, val items: ArrayList<ClickableItem> = ArrayList()) : Listener {
 	val inv: Inventory = Bukkit.createInventory(null, size, "Inventory")
 	var onClose: (InventoryCloseEvent.() -> Unit)? = null
-
+	
 	init {
 		Bukkit.getPluginManager().registerEvents(this, DungeonCrawler.instance)
 	}
-
+	
 	fun add(clickableItem: ClickableItem) {
 		items.add(clickableItem)
 		clickableItem.slot?.let { inv.setItem(it, clickableItem.itemStack) }
 	}
-
+	
 	fun open(player: Player) {
 		player.openInventory(inv)
 	}
-
+	
 	@EventHandler
 	fun onClose(e: InventoryCloseEvent) {
 		if (e.inventory.hashCode() == inv.hashCode()) {
@@ -45,12 +45,23 @@ class ClickableItem(var itemStack: ItemStack? = null, var slot: Int? = null, var
 	init {
 		Bukkit.getPluginManager().registerEvents(this, DungeonCrawler.instance)
 	}
-
+	
 	@EventHandler
 	fun onEvent(e: InventoryClickEvent) {
-		if (e.currentItem.hashCode() == itemStack!!.hashCode()) {
-			click?.action?.let { e.apply(it) }
+		try {
+			if (e.currentItem.type == itemStack!!.type && e.currentItem.durability == itemStack!!.durability && e.currentItem.amount == itemStack!!.amount && e.currentItem.hasItemMeta() == itemStack!!.hasItemMeta()) {
+				if (itemStack!!.hasItemMeta()) {
+					if (e.currentItem.itemMeta.displayName == itemStack!!.itemMeta.displayName && e.currentItem.itemMeta.lore == itemStack!!.itemMeta.lore)
+						click?.action?.let { e.apply(it) }
+				} else {
+					click?.action?.let { e.apply(it) }
+				}
+			}
+		} catch (e: NullPointerException) {
+			println("someone made an oopsies")
+			e.printStackTrace()
 		}
+		
 	}
 }
 
