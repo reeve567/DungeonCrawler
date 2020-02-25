@@ -30,6 +30,7 @@ class JoinLeaveHandler(private val dungeonCrawler: DungeonCrawler, private val p
 	@EventHandler
 	fun onPlayerLeave(e: PlayerQuitEvent) {
 		e.quitMessage = "§6${e.player.name} §7has left the game."
+		playerDataManager.playerData[e.player.uniqueId]!!.pet?.remove()
 		playerDataManager.playerData[e.player.uniqueId]!!.party?.leave(e.player)
 	}
 }

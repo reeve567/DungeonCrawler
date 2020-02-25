@@ -86,6 +86,7 @@ fun Player.updateTeam() {
 			}
 		}
 	}
+	player.scoreboard = Bukkit.getScoreboardManager().mainScoreboard
 }
 
 fun Player.sendHeaderAndFooter(header: String, footer: String) {

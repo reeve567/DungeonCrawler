@@ -40,9 +40,9 @@ class Pet(val owner: Player, val type: PetType, var playerData: PlayerData) : Li
 
 	init {
 		Bukkit.getPluginManager().registerEvents(this, DungeonCrawler.instance)
-		if (playerData.petLevels.levels.containsKey(type.name)) {
-			level = playerData.petLevels.levels[type.name]!!.first
-			exp = playerData.petLevels.levels[type.name]!!.second
+		if (playerData.petLevels.levels.containsKey(type.id)) {
+			level = playerData.petLevels.levels[type.id]!!.first
+			exp = playerData.petLevels.levels[type.id]!!.second
 		} else {
 			saveLevels()
 		}
@@ -93,7 +93,7 @@ class Pet(val owner: Player, val type: PetType, var playerData: PlayerData) : Li
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonCrawler.instance, {
 			if (summoned) {
 				levelUp()
-				entity.teleport(zombie.location.setDirection(owner.location.toVector().subtract(entity.location.toVector())).add(0.0, 1.5, 0.0), PlayerTeleportEvent.TeleportCause.PLUGIN)
+				entity.teleport(zombie.location.setDirection(owner.location.toVector().subtract(entity.location.toVector())).add(0.0, 2.0, 0.0), PlayerTeleportEvent.TeleportCause.PLUGIN)
 			}
 		}, 2L, 2L)
 	}
@@ -111,7 +111,7 @@ class Pet(val owner: Player, val type: PetType, var playerData: PlayerData) : Li
 	}
 
 	fun saveLevels() {
-		playerData.petLevels.levels[type.name] = level to exp
+		playerData.petLevels.levels[type.id] = level to exp
 	}
 
 	private fun levelUp() {

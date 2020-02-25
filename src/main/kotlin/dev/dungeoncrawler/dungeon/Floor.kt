@@ -32,7 +32,7 @@ fun main() {
 class Floor(private val dungeon: Dungeon, private val number: Int, private val offsetX: Int, val createCheckpoints: Boolean = true) : Listener {
 	
 	val world: World = Bukkit.getWorld("world")
-	private val rooms: ArrayList<Room> = ArrayList()
+	val rooms: ArrayList<Room> = ArrayList()
 	private val visited = HashMap<UUID, HashSet<Pair<Int, Int>>>()
 	val left = HashMap<UUID, Int>()
 	val mobs = HashMap<UUID, Pair<UUID, Pair<Int, Int>>>()

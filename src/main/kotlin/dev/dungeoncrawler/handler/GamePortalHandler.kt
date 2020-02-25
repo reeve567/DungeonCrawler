@@ -3,6 +3,7 @@ package dev.dungeoncrawler.handler
 import dev.dungeoncrawler.Constants
 import dev.dungeoncrawler.data.PlayerDataManager
 import dev.dungeoncrawler.dungeon.Dungeon
+import dev.dungeoncrawler.npcs.pets.Pet
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.entity.EntityTeleportEvent
@@ -36,7 +37,7 @@ class GamePortalHandler(val playerDataManager: PlayerDataManager, val dungeon: D
 	@EventHandler
 	fun onTeleport(e: EntityTeleportEvent) {
 		if (e.from.world != e.to.world)
-			if (e.entity.hasMetadata("pet") || e.entity.hasMetadata("follower"))
+			if (e.entity.hasMetadata("pet") || e.entity.hasMetadata("follower") || Pet.followers.containsKey(e.entity.uniqueId) || Pet.pets.containsKey(e.entity.uniqueId))
 				e.isCancelled = true
 	}
 }

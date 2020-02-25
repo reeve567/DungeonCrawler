@@ -15,22 +15,23 @@ class PetCommand(val playerDataManager: PlayerDataManager) : CommandExecutor {
 	init {
 		Bukkit.getPluginCommand("pet").executor = this
 	}
-
+	
 	override fun onCommand(player: CommandSender?, p1: Command?, p2: String?, args: Array<out String>?): Boolean {
 		if (player !is Player)
 			return false
 		val playerData = playerDataManager.playerData[player.uniqueId]!!
 		if (playerData.pet == null || (playerData.pet != null && !playerData.pet!!.summoned)) {
 			gui(9) {
+				
 				for (i in PetType.values().indices) {
 					val type = PetType.values()[i]
 					var level = 1
 					var exp = 0L
-					if (playerData.petLevels.levels.containsKey(type.name)) {
-						level = playerData.petLevels.levels[type.name]!!.first
-						exp = playerData.petLevels.levels[type.name]!!.second
+					if (playerData.petLevels.levels.containsKey(type.id)) {
+						level = playerData.petLevels.levels[type.id]!!.first
+						exp = playerData.petLevels.levels[type.id]!!.second
 					}
-
+					
 					clickableItem {
 						if (player.hasPermission("dungeoncrawler.pets.${type.name.toLowerCase()}")) {
 							clickAction {
@@ -38,11 +39,11 @@ class PetCommand(val playerDataManager: PlayerDataManager) : CommandExecutor {
 								playerData.pet = Pet(player, type, playerData)
 								player.closeInventory()
 							}
-
+							
 							itemStack = item(type.getHead()) {
 								itemMeta {
 									displayName = "§6${type.petName}"
-									lore = listOf("§7Damage: §6${type.getDamageTotal(level)}", "§7Attack speed: §6${((type.attackSpeed / 20.0) * 100).toInt() / 100.0}", "§7Description:", "§6${type.description}", "§7Level: $level", "§7EXP: $exp/${Pet.getExpToLevel(level)
+									lore = listOf("§7Damage: §6${type.getDamageTotal(level)}", "§7Attack speed: §6${((type.attackSpeed / 20.0) * 100).toInt() / 100.0}", "§7Description:", "§6${type.description}", "§7Level: §6$level", "§7EXP: §6$exp§7/§6${Pet.getExpToLevel(level)
 											?: "MAXED"}")
 								}
 							}
@@ -67,23 +68,23 @@ class PetCommand(val playerDataManager: PlayerDataManager) : CommandExecutor {
 						val type = playerData.pet!!.type
 						val level = playerData.pet!!.level
 						val exp = playerData.pet!!.exp
-						player.sendMessage(arrayOf("§7Damage: §6${type.getDamageTotal(level)}", "§7Attack speed: §6${((type.attackSpeed / 20.0) * 100).toInt() / 100.0}", "§7Level: $level", "§7EXP: $exp/${Pet.getExpToLevel(level)
+						player.sendMessage(arrayOf("§7Damage: §6${type.getDamageTotal(level)}", "§7Attack speed: §6${((type.attackSpeed / 20.0) * 100).toInt() / 100.0}", "§7Level: §6$level", "§7EXP: §6$exp§7/§6${Pet.getExpToLevel(level)
 								?: "MAXED"}"))
 					} else {
 						player.sendMessage(arrayOf(
 								"§6Pet Help",
 								"§7/§6pet - Pet selection menu/Send back pet ",
 								"§7/§6pet stats"
-								))
+						))
 					}
 					return true
 				}
 			}
-
+			
 			player.sendMessage("§6You sent back your pet.")
 			playerData.pet!!.remove()
 		}
-
+		
 		return true
 	}
 }

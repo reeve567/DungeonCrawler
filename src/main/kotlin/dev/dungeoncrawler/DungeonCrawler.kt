@@ -15,6 +15,7 @@ import dev.dungeoncrawler.handler.BankHandler
 import dev.dungeoncrawler.handler.GamePortalHandler
 import dev.dungeoncrawler.handler.GeneralHandler
 import dev.dungeoncrawler.handler.JoinLeaveHandler
+import dev.dungeoncrawler.loot.ExitFinder
 import org.bukkit.Bukkit
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Zombie
@@ -51,6 +52,7 @@ class DungeonCrawler : JavaPlugin() {
 		)
 		loadCommands()
 		loadTeams()
+		loadLoot()
 		sendTabAndScoreboard()
 		
 		//NonPlayerCharacter(Location(world, 10000.5, 41.0, 10015.5, 0f, 0f))
@@ -90,11 +92,17 @@ class DungeonCrawler : JavaPlugin() {
 		PetCommand(playerDataManager)
 	}
 	
+	private fun loadLoot() {
+		register(
+				ExitFinder()
+		)
+	}
+	
 	private fun sendTabAndScoreboard() {
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, {
 			Bukkit.getOnlinePlayers().forEach {
 				it.sendHeaderAndFooter("§8§m«---[§r §6§lDungeonCrawler §r§8§m]---»\n§cdungeoncrawler.dev", "§6Players Online: ${Bukkit.getOnlinePlayers().size}")
-				it.sendScoreboardUpdate(playerDataManager.playerData[it.uniqueId]!!)
+				//it.sendScoreboardUpdate(playerDataManager.playerData[it.uniqueId]!!)
 			}
 		}, 20L, 20L)
 	}
