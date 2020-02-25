@@ -10,7 +10,6 @@ import org.bukkit.entity.Player
 class Room( val floor: Floor, val x: Int, val z: Int, private val pfbIndex: Int, val isCheckpoint: Boolean = false) {
 	fun create() {
 		val prefab: Chunk = if (isCheckpoint) {
-			println("checkpoint")
 			floor.world.getChunkAt(998, 998)
 		} else {
 			val pfbX = (pfbIndex / Constants.PREFAB_SIZE)

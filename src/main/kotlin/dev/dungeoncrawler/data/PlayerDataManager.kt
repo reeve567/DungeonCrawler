@@ -18,7 +18,6 @@ class PlayerDataManager {
 			playerData[uuid]!!.balance += amount
 			Bukkit.getPlayer(uuid).sendActionBar("§6+$amount Gold")
 			Bukkit.getPlayer(uuid).playSound(Bukkit.getPlayer(uuid).location, Sound.NOTE_PLING, .5f, 1f)
-			println("Added $amount to $uuid's account for a total of ${playerData[uuid]!!.balance}")
 			return true
 		}
 		return false

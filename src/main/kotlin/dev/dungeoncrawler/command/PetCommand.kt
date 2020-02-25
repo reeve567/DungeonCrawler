@@ -31,13 +31,11 @@ class PetCommand(val playerDataManager: PlayerDataManager) : CommandExecutor {
 						exp = playerData.petLevels.levels[type.name]!!.second
 					}
 					
-					
 					clickableItem {
 						if (player.hasPermission("dungeoncrawler.pets.${type.name.toLowerCase()}")) {
 							clickAction {
 								isCancelled = true
 								playerData.pet = Pet(player, type, playerData)
-								println("what")
 								player.closeInventory()
 							}
 							

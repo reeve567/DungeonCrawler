@@ -268,7 +268,6 @@ class Floor(private val dungeon: Dungeon, private val number: Int, private val o
 					if (roomExistsAroundWithin(rand.first, rand.second, (size - 1), size - 1) && getRoom(rand.first, rand.second) == null) {
 						found = true
 						rooms[rand] = createRoom(rand.first, rand.second, true)
-						println("created checkpoint - ${rooms[rand]!!.x} + ${rooms[rand]!!.z}")
 					}
 				} while (!found)
 				
