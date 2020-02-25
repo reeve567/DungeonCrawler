@@ -24,7 +24,7 @@ class PetCommand(val playerDataManager: PlayerDataManager) : CommandExecutor {
 				for (i in Pet.Type.values().indices) {
 					val type = Pet.Type.values()[i]
 					var level = 1
-					var exp = 0
+					var exp = 0L
 					if (playerData.petLevels.levels.containsKey(type.name)) {
 						level = playerData.petLevels.levels[type.name]!!.first
 						exp = playerData.petLevels.levels[type.name]!!.second
@@ -43,7 +43,7 @@ class PetCommand(val playerDataManager: PlayerDataManager) : CommandExecutor {
 							itemStack = item(type.getHead()) {
 								itemMeta {
 									displayName = "§6${type.petName}"
-									lore = listOf("§7Damage: §6${type.getDamageTotal(level)}", "§7Attack speed: §6${((type.attackSpeed / 20.0) * 100).toInt() / 100.0}", "§7Description:", "§6${type.description}", "§7Level: $level", "§7EXP: $exp/${Pet.getExpToLevel(level)}")
+									lore = listOf("§7Damage: §6${type.getDamageTotal(level)}", "§7Attack speed: §6${((type.attackSpeed / 20.0) * 100).toInt() / 100.0}", "§7Description:", "§6${type.description}", "§7Level: $level", "§7EXP: $exp/${Pet.getExpToLevel(level) ?: "MAXED"}")
 								}
 							}
 						} else {

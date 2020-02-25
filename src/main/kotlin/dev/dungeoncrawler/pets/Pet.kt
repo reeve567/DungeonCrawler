@@ -27,15 +27,18 @@ class Pet(val owner: Player, val type: Type, var playerData: PlayerData) : Liste
 	private val zombie: Zombie = Bukkit.getWorld("world").spawnEntity(owner.location, EntityType.ZOMBIE) as Zombie
 	var summoned = true
 	private var level = 1
-	private var exp = 0
-	
+	private var exp = 0L
+
 	companion object {
-		fun getExpToLevel(level: Int): Int {
-			if (level == 1) return 100
-			else return (getExpToLevel(level - 1) * 2.5).toInt()
+		fun getExpToLevel(level: Int): Long? {
+			return when (level) {
+				10 -> null
+				1 -> 100
+				else -> (getExpToLevel(level - 1)!! * 2.5).toLong()
+			}
 		}
 	}
-	
+
 	init {
 		Bukkit.getPluginManager().registerEvents(this, DungeonCrawler.instance)
 		if (playerData.petLevels.levels.containsKey(type.name)) {
@@ -46,7 +49,7 @@ class Pet(val owner: Player, val type: Type, var playerData: PlayerData) : Liste
 		}
 		setPetEntity()
 		setFollowerEntity()
-		
+
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonCrawler.instance, {
 			if (summoned) {
 				zombie.target = owner.asCraftPlayer()
@@ -56,7 +59,7 @@ class Pet(val owner: Player, val type: Type, var playerData: PlayerData) : Liste
 					zombie.remove()
 					entity.remove()
 					summoned = false
-					
+
 					saveLevels()
 				} else {
 					var closestEntity: LivingEntity? = null
@@ -92,7 +95,7 @@ class Pet(val owner: Player, val type: Type, var playerData: PlayerData) : Liste
 				}
 			}
 		}, type.attackSpeed, type.attackSpeed)
-		
+
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonCrawler.instance, {
 			if (summoned) {
 				levelUp()
@@ -100,45 +103,46 @@ class Pet(val owner: Player, val type: Type, var playerData: PlayerData) : Liste
 			}
 		}, 2L, 2L)
 	}
-	
-	 fun saveLevels() {
+
+	fun saveLevels() {
 		playerData.petLevels.levels[type.name] = level to exp
 	}
-	
+
 	private fun levelUp() {
-		if (exp > getExpToLevel(level)) {
-			exp = 0
-			level++
-			saveLevels()
-			owner.sendMessage("§6Your pet has leveled up to $level.")
-			entity.customName = "§8[§6$level§8] §f${type.petName}"
-		}
+		if (getExpToLevel(level) != null)
+			if (exp > getExpToLevel(level)!!) {
+				exp -= getExpToLevel(level)!!
+				level++
+				saveLevels()
+				owner.sendMessage("§6Your pet has leveled up to $level.")
+				entity.customName = "§8[§6$level§8] §f${type.petName}"
+			}
 	}
-	
+
 	fun addExp(amount: Int) {
 		exp += amount
 	}
-	
+
 	private fun setPetEntity() {
 		entity.setBasePlate(false)
 		entity.setGravity(false)
 		entity.isSmall = true
 		entity.isVisible = false
-		
+
 		entity.customName = "§8[§6$level§8] §f${type.petName}"
 		entity.isCustomNameVisible = true
-		
+
 		entity.setMetadata("pet", FixedMetadataValue(DungeonCrawler.instance, owner.uniqueId.toString()))
 		entity.equipment.helmet = type.getHead()
 	}
-	
+
 	private fun setFollowerEntity() {
 		zombie.isBaby = true
 		(zombie as CraftZombie).handle.b(true)
 		zombie.addPotionEffect(PotionEffect(PotionEffectType.INVISIBILITY, Int.MAX_VALUE, 1, false, false))
 		zombie.setMetadata("follower", FixedMetadataValue(DungeonCrawler.instance, owner.uniqueId.toString()))
 	}
-	
+
 	enum class Type(val baseDamage: Double, val attackSpeed: Long, val petName: String, val description: String, private val headValue: String) : Attacker {
 		BEE(3.0, 20, "Bee", "Just a humble bee.", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDdkYjlhNjA0N2QyOTlhNjk0NWZhMzYwMjk5ZTEyYTEzNzM2ZDU2ZjFmZGZjMTkyZWMyMGYyOWNmNDY4MThjIn19fQ==") {
 			override fun attack(pet: Pet, entity: LivingEntity) {
@@ -149,42 +153,42 @@ class Pet(val owner: Player, val type: Type, var playerData: PlayerData) : Liste
 			}
 		}
 		;
-		
+
 		fun getDamageTotal(level: Int): Double {
-			return ((baseDamage * level / if (level > 1) 1.5 else 1.0)*100).toInt() / 100.0
+			return ((baseDamage * level / if (level > 1) 1.5 else 1.0) * 100).toInt() / 100.0
 		}
-		
+
 		fun getHead(): ItemStack {
 			val head = ItemStack(Material.SKULL_ITEM, 1, 3)
 			val meta = head.itemMeta as SkullMeta
-			
+
 			val profile = GameProfile(UUID.randomUUID(), "")
 			profile.properties.put("textures", Property("textures", headValue))
-			
+
 			val profileField = meta.javaClass.getDeclaredField("profile")
 			profileField.isAccessible = true
 			profileField.set(meta, profile)
-			
+
 			head.itemMeta = meta
 			return head
 		}
 	}
-	
+
 	interface Attacker {
 		fun attack(pet: Pet, entity: LivingEntity)
 	}
-	
+
 	@EventHandler(priority = EventPriority.HIGH)
 	fun onDamage(e: EntityDamageEvent) {
 		if (e.entity.hasMetadata("pet") || e.entity.hasMetadata("follower"))
 			e.isCancelled = true
 	}
-	
+
 	@EventHandler
 	fun onPlayerDamaged(e: EntityDamageByEntityEvent) {
 		if (e.damager.hasMetadata("follower"))
 			e.isCancelled = true
 	}
-	
-	
+
+
 }

@@ -35,7 +35,7 @@ class PetLevelDataTypeAdapter : JsonSerializer<PetLevelData>, JsonDeserializer<P
 		val petLevelData = PetLevelData()
 		val names = json.asJsonObject.getAsJsonArray("names").map { it.asString }
 		val levels = json.asJsonObject.getAsJsonArray("levels").map { it.asInt }
-		val exps = json.asJsonObject.getAsJsonArray("exps").map { it.asInt }
+		val exps = json.asJsonObject.getAsJsonArray("exps").map { it.asLong }
 		for (i in names.indices) {
 			val name = names[i]
 			val level = levels[i]

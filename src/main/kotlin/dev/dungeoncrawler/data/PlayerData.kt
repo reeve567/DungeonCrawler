@@ -12,7 +12,7 @@ data class PlayerData(
 		var bankData: BankData,
 		var marketData: MarketData,
 		var level: Int,
-		var exp: Int,
+		var exp: Long,
 		var highestFloor: Int,
 		val petLevels: PetLevelData
 ) {
