@@ -69,7 +69,14 @@ class PetCommand(val playerDataManager: PlayerDataManager) : CommandExecutor {
 						val exp = playerData.pet!!.exp
 						player.sendMessage(arrayOf("§7Damage: §6${type.getDamageTotal(level)}", "§7Attack speed: §6${((type.attackSpeed / 20.0) * 100).toInt() / 100.0}", "§7Level: $level", "§7EXP: $exp/${Pet.getExpToLevel(level)
 								?: "MAXED"}"))
+					} else {
+						player.sendMessage(arrayOf(
+								"§6Pet Help",
+								"§7/§6pet - Pet selection menu/Send back pet ",
+								"§7/§6pet stats"
+								))
 					}
+					return true
 				}
 			}
 
