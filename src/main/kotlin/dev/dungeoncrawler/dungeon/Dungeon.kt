@@ -2,18 +2,21 @@ package dev.dungeoncrawler.dungeon
 
 import dev.dungeoncrawler.DungeonCrawler
 import dev.dungeoncrawler.data.PlayerDataManager
+import dev.dungeoncrawler.mobs.MobHandler
 import org.bukkit.Bukkit
 import org.bukkit.Chunk
 
 class Dungeon(val plugin: DungeonCrawler, val playerDataManager: PlayerDataManager) {
 	
 	val floors: Array<Floor?> = arrayOfNulls(5)
+	val mobHandler: MobHandler = MobHandler(plugin)
 	
 	init {
 		for (i in floors.indices) {
 			floors[i] = Floor(this, i + 1, i * -25, i != floors.size - 1)
 			Bukkit.getPluginManager().registerEvents(floors[i], plugin)
 		}
+
 	}
 	
 	fun generate() {

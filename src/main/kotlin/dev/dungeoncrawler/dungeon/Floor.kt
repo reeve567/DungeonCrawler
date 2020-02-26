@@ -4,6 +4,7 @@ import dev.dungeoncrawler.Constants
 import dev.dungeoncrawler.extensions.copyTo
 import dev.dungeoncrawler.extensions.dropGold
 import dev.dungeoncrawler.extensions.isSafe
+import dev.dungeoncrawler.mobs.Mite
 import dev.dungeoncrawler.utility.item
 import dev.dungeoncrawler.utility.itemMeta
 import org.bukkit.*
@@ -122,23 +123,8 @@ class Floor(private val dungeon: Dungeon, private val number: Int, private val o
 								val block = chunk.getBlock(rand.first, y, rand.second)
 								if (!found && block.isSafe()) {
 									found = true
-									val type = Random.nextInt(0..1)
-									when (type) {
-										1 -> {
-											val zombie = block.world.spawn(block.location.add(0.5, 1.0, 0.5), Zombie::class.java)
-											zombie.equipment.helmet = ItemStack(Material.STONE_BUTTON)
-											zombie.equipment.helmetDropChance = 0f
-											zombie.target = e.player
-											mobs[zombie.uniqueId] = e.player.uniqueId to pair
-										}
-										else -> {
-											val skeleton = block.world.spawn(block.location.add(0.5, 1.0, 0.5), Skeleton::class.java)
-											skeleton.equipment.helmet = ItemStack(Material.STONE_BUTTON)
-											skeleton.equipment.helmetDropChance = 0f
-											skeleton.target = e.player
-											mobs[skeleton.uniqueId] = e.player.uniqueId to pair
-										}
-									}
+									val mob = dungeon.mobHandler.spawnRandomMob(1, block.location.add(0.5, 1.0, 0.5))
+									mobs[mob!!.entity!!.uniqueId] = e.player.uniqueId to pair
 								}
 							}
 						} while (!found)
@@ -179,7 +165,8 @@ class Floor(private val dungeon: Dungeon, private val number: Int, private val o
 	
 	@EventHandler
 	fun onMobDeath(e: EntityDeathEvent) {
-		if (e.entity.type == EntityType.SKELETON || e.entity.type == EntityType.ZOMBIE) {
+		if (mobs.containsKey(e.entity.uniqueId)) {
+			mobs.remove(e.entity.uniqueId)
 			e.droppedExp = 0
 			val killer = e.entity.killer
 			if (killer != null && roomExists(killer.location.chunk.x, killer.location.chunk.z)) {
@@ -189,7 +176,6 @@ class Floor(private val dungeon: Dungeon, private val number: Int, private val o
 						if (left[mobs[e.entity.uniqueId]!!.first]!! == 0) {
 							room.createFakeDoors(Bukkit.getPlayer(mobs[e.entity.uniqueId]!!.first), Material.AIR, 0)
 						}
-						mobs.remove(e.entity.uniqueId)
 					}
 				}
 				killer.dropGold((Random.nextInt(6..12) * number.toDouble().pow(2.0)).toInt(), e.entity.location)
