@@ -1,27 +1,19 @@
 package dev.dungeoncrawler.mobs
 
-import dev.dungeoncrawler.dungeon.Floor
 import org.bukkit.Location
-import org.bukkit.Material
-import org.bukkit.entity.Silverfish
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftZombie
+import org.bukkit.entity.EntityType
 import org.bukkit.entity.Zombie
-import org.bukkit.event.EventHandler
-import org.bukkit.event.entity.EntityDeathEvent
-import org.bukkit.inventory.ItemStack
+import org.bukkit.potion.PotionEffect
+import org.bukkit.potion.PotionEffectType
 
-class Undead(loc: Location) : Mob(loc) {
-    init {
-        val entity: Zombie = loc.world.spawn(loc, Zombie::class.java)
-        entity.customName = "§cUndead"
-        entity.isCustomNameVisible = true
-        entity.maxHealth = 10.0
-        entity.health = 10.0
-        entity.equipment.helmet = ItemStack(Material.STONE_BUTTON)
-        entity.equipment.helmetDropChance = 0f
-        this.entity = entity
-    }
-
-    override fun die() {
-
-    }
+class Undead(loc: Location, floor: Int) : Mob(loc, "§cUndead", 10.0, EntityType.ZOMBIE, floor) {
+	init {
+		val zombie = entity as Zombie as CraftZombie
+		zombie.addPotionEffect(PotionEffect(PotionEffectType.SPEED, Int.MAX_VALUE, 0, false, false))
+	}
+	
+	override fun die() {
+		killArmorStand()
+	}
 }

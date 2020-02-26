@@ -6,23 +6,24 @@ import dev.dungeoncrawler.data.PlayerDataManager
 import dev.dungeoncrawler.dungeon.Dungeon
 import dev.dungeoncrawler.dungeon.SetCommand
 import dev.dungeoncrawler.extensions.sendHeaderAndFooter
-import dev.dungeoncrawler.extensions.sendScoreboardUpdate
 import dev.dungeoncrawler.extensions.updateTeam
 import dev.dungeoncrawler.handler.BankHandler
 import dev.dungeoncrawler.handler.GamePortalHandler
 import dev.dungeoncrawler.handler.GeneralHandler
 import dev.dungeoncrawler.handler.JoinLeaveHandler
 import dev.dungeoncrawler.loot.ExitFinder
+import net.milkbowl.vault.chat.Chat
 import org.bukkit.Bukkit
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Zombie
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
 
+
 class DungeonCrawler : JavaPlugin() {
 	val playerDataManager = PlayerDataManager()
 	private val configurationManager = ConfigurationManager(playerDataManager, dataFolder)
-	 var dungeon: Dungeon? = null
+	var dungeon: Dungeon? = null
 	
 	init {
 		instance = this
@@ -30,6 +31,7 @@ class DungeonCrawler : JavaPlugin() {
 	
 	companion object {
 		lateinit var instance: DungeonCrawler
+		lateinit var chat: Chat
 	}
 	
 	override fun onEnable() {
@@ -52,6 +54,7 @@ class DungeonCrawler : JavaPlugin() {
 		loadLoot()
 		sendTabAndScoreboard()
 		
+		setupChat()
 		//NonPlayerCharacter(Location(world, 10000.5, 41.0, 10015.5, 0f, 0f))
 	}
 	
@@ -94,6 +97,11 @@ class DungeonCrawler : JavaPlugin() {
 		register(
 				ExitFinder()
 		)
+	}
+	
+	private fun setupChat() {
+		val rsp = server.servicesManager.getRegistration(Chat::class.java)
+		chat = rsp.provider
 	}
 	
 	private fun sendTabAndScoreboard() {

@@ -17,7 +17,6 @@ import org.bukkit.event.entity.EntityDeathEvent
 import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.event.inventory.InventoryType
 import org.bukkit.event.player.PlayerMoveEvent
-import org.bukkit.inventory.ItemStack
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -114,22 +113,32 @@ class Floor(private val dungeon: Dungeon, private val number: Int, private val o
 				}
 				
 				fun spawnMobs() {
-					val amount = Random.nextInt(IntRange(Constants.MOB_SPAWN_MIN, Constants.MOB_SPAWN_MAX))
-					for (i in 0 until amount) {
+					val mobList = ArrayList<UUID>()
+					for (i in 0 until Random.nextInt(IntRange(Constants.MOB_SPAWN_MIN, Constants.MOB_SPAWN_MAX))) {
 						var found = false
 						do {
 							val rand = getRandomSpawn()
-							for (y in 10..14) {
+							for (y in 10..13) {
 								val block = chunk.getBlock(rand.first, y, rand.second)
 								if (!found && block.isSafe()) {
 									found = true
-									val mob = dungeon.mobHandler.spawnRandomMob(1, block.location.add(0.5, 1.0, 0.5))
-									mobs[mob!!.entity!!.uniqueId] = e.player.uniqueId to pair
+									val mob = dungeon.mobHandler.spawnRandomMob(number, block.location.add(0.5, 1.0, 0.5))
+									(mob!!.entity as Monster).target = e.player
+									mobs[mob.entity.uniqueId] = e.player.uniqueId to pair
+									mobList.add(mob.entity.uniqueId)
+									if (mob is Mite) {
+										for (j in 0 until 2) {
+											val mob1 = dungeon.mobHandler.spawnRandomMob(number, block.location.add(0.5, 1.0, 0.5))
+											(mob1!!.entity as Monster).target = e.player
+											mobs[mob1.entity.uniqueId] = e.player.uniqueId to pair
+											mobList.add(mob1.entity.uniqueId)
+										}
+									}
 								}
 							}
 						} while (!found)
 					}
-					left[e.player.uniqueId] = amount
+					left[e.player.uniqueId] = mobList.size
 					room.createFakeDoors(e.player)
 				}
 				
@@ -165,9 +174,8 @@ class Floor(private val dungeon: Dungeon, private val number: Int, private val o
 	
 	@EventHandler
 	fun onMobDeath(e: EntityDeathEvent) {
+		e.droppedExp = 0
 		if (mobs.containsKey(e.entity.uniqueId)) {
-			mobs.remove(e.entity.uniqueId)
-			e.droppedExp = 0
 			val killer = e.entity.killer
 			if (killer != null && roomExists(killer.location.chunk.x, killer.location.chunk.z)) {
 				getRoom(killer.location.chunk.x, killer.location.chunk.z)?.also { room ->
@@ -185,6 +193,7 @@ class Floor(private val dungeon: Dungeon, private val number: Int, private val o
 					playerData.pet!!.addExp((Random.nextInt(6..12) * number.toDouble().pow(1.25)).toInt())
 				}
 			}
+			mobs.remove(e.entity.uniqueId)
 		}
 	}
 	

@@ -38,7 +38,7 @@ class BankPageData(var items: HashMap<Int, ItemStack> = HashMap()) {
 						if (playerData.balance >= cost) {
 							playerDataManager.addBalance(player, -cost.toInt())
 							playerData.bankData.pages[currentPage + 1] = BankPageData()
-							playerData.bankData.pages[currentPage + 1]!!.openPage(player, playerDataManager, currentPage)
+							playerData.bankData.pages[currentPage + 1]!!.openPage(player, playerDataManager, currentPage + 1)
 						}
 						isCancelled = true
 					}

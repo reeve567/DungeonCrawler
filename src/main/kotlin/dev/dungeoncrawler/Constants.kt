@@ -28,9 +28,9 @@ object Constants {
 	}
 
 	enum class RankTeam(val label: String, val prefix: String, val permission: String) {
-		DEVELOPER("a_developers", "§b§lDEV §r", "dungeoncrawler.developer"),
-		HELPER("b_helpers", "§a§lHELPER §r", "dungeoncrawler.helper"),
-		TESTER("c_testers", "§c§lTESTER §r", "dungeoncrawler.tester"),
-		MEMBER("d_members", "§7&lMEMBER §r", "dungeoncrawler.member")
+		DEVELOPER("a_developers", "§b§lDev §r", "dungeoncrawler.developer"),
+		HELPER("b_helpers", "§a§lHelper §r", "dungeoncrawler.helper"),
+		TESTER("c_testers", "§c§lTester §r", "dungeoncrawler.tester"),
+		MEMBER("d_members", "§7&lMember §r", "dungeoncrawler.member")
 	}
 }

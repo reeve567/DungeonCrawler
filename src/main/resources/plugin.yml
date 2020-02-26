@@ -1,6 +1,8 @@
 main: dev.dungeoncrawler.DungeonCrawler
 name: DungeonCrawler
 version: 1.0-SNAPSHOT
+depend:
+  - Vault
 authors:
   - Xwy
   - ImUnsmart

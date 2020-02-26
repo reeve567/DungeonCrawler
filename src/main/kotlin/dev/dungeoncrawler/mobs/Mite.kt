@@ -1,26 +1,22 @@
 package dev.dungeoncrawler.mobs
 
-import dev.dungeoncrawler.dungeon.Floor
+import net.minecraft.server.v1_8_R3.*
 import org.bukkit.Location
-import org.bukkit.Material
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftSilverfish
+import org.bukkit.entity.EntityType
 import org.bukkit.entity.Silverfish
-import org.bukkit.event.EventHandler
-import org.bukkit.event.entity.EntityDeathEvent
-import org.bukkit.inventory.ItemStack
 
-class Mite(loc: Location) : Mob(loc) {
-    init {
-        val entity: Silverfish = loc.world.spawn(loc, Silverfish::class.java)
-        entity.customName = "§cMite"
-        entity.isCustomNameVisible = true
-        entity.maxHealth = 4.0
-        entity.health = 4.0
-        entity.equipment.helmet = ItemStack(Material.STONE_BUTTON)
-        entity.equipment.helmetDropChance = 0f
-        this.entity = entity
-    }
-
-    override fun die() {
-
-    }
+class Mite(loc: Location, floor: Int) : Mob(loc, "§cMite", 4.0, EntityType.SILVERFISH, floor) {
+	init {
+		val silver : EntitySilverfish = ((entity as Silverfish) as CraftSilverfish).handle
+		val goalSelector = PathfinderGoalSelector((loc.world as CraftWorld).handle.methodProfiler)
+		goalSelector.a(1, PathfinderGoalFloat(silver))
+		goalSelector.a(4, PathfinderGoalMeleeAttack(silver, EntityHuman::class.java, 1.0, false))
+		
+		silver.goalSelector = goalSelector
+	}
+	override fun die() {
+		killArmorStand()
+	}
 }
