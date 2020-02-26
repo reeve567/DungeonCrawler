@@ -34,7 +34,7 @@ class Pet(val owner: Player, val type: PetType, var playerData: PlayerData) : Li
 			return when (level) {
 				10 -> null
 				1 -> 100
-				else -> (getExpToLevel(level - 1)!! * 2.5).toLong()
+				else -> (getExpToLevel(level - 1)!! * 5)
 			}
 		}
 	}

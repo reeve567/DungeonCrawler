@@ -13,6 +13,8 @@ commands:
     permission: dungeoncrawler.admin
   loot:
     permission: dungeoncrawler.loot
+  key:
+    permission: dungeoncrawler.key
   pet:
     permission: dungeoncrawler.pet
   balance:

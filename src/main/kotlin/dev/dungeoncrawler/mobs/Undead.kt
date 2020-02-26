@@ -1,5 +1,6 @@
 package dev.dungeoncrawler.mobs
 
+import net.minecraft.server.v1_8_R3.GenericAttributes
 import org.bukkit.Location
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftZombie
 import org.bukkit.entity.EntityType
@@ -10,7 +11,10 @@ import org.bukkit.potion.PotionEffectType
 class Undead(loc: Location, floor: Int) : Mob(loc, "§cUndead", 10.0, EntityType.ZOMBIE, floor) {
 	init {
 		val zombie = entity as Zombie as CraftZombie
-		zombie.addPotionEffect(PotionEffect(PotionEffectType.SPEED, Int.MAX_VALUE, 0, false, false))
+		zombie.handle.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).value = .5
+		val a = zombie.handle.javaClass.getDeclaredField("a")
+		a.isAccessible = true
+		zombie.handle.attributeMap.a().remove(a.get(zombie.handle))
 	}
 	
 	override fun die() {

@@ -13,7 +13,7 @@ enum class PetType(val baseDamage: Double, val attackSpeed: Long, val petName: S
 		override fun attack(pet: Pet, entity: LivingEntity) {
 		}
 	},
-	FOX(4.0,18,"Fox",3,"Ready for business.","eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWVjMjg0NDczMmIyOTA2M2Q0ODVmNTM1NGQ0YTIyYzc2MzAxZmU2YzA4ZjkwYWVkNjZjMWViZGQ4ZDQzMzljMyJ9fX0=") {
+	FOX(4.0, 18, "Fox", 3, "Ready for business.", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNWVjMjg0NDczMmIyOTA2M2Q0ODVmNTM1NGQ0YTIyYzc2MzAxZmU2YzA4ZjkwYWVkNjZjMWViZGQ4ZDQzMzljMyJ9fX0=") {
 		override fun attack(pet: Pet, entity: LivingEntity) {
 		}
 	},
@@ -21,7 +21,7 @@ enum class PetType(val baseDamage: Double, val attackSpeed: Long, val petName: S
 		override fun attack(pet: Pet, entity: LivingEntity) {
 		}
 	},
-	LIGHTNING_ORB(55.0, 10, "Lightning Orb", 50, "... not really a pet.", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzNkMTQ1NjFiYmQwNjNmNzA0MjRhOGFmY2MzN2JmZTljNzQ1NjJlYTM2ZjdiZmEzZjIzMjA2ODMwYzY0ZmFmMSJ9fX0=") {
+	FIRE_ORB(55.0, 10, "Fire Orb", 50, "... not really a pet.", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzNkMTQ1NjFiYmQwNjNmNzA0MjRhOGFmY2MzN2JmZTljNzQ1NjJlYTM2ZjdiZmEzZjIzMjA2ODMwYzY0ZmFmMSJ9fX0=") {
 		override fun attack(pet: Pet, entity: LivingEntity) {
 		}
 	}
@@ -36,6 +36,8 @@ enum class PetType(val baseDamage: Double, val attackSpeed: Long, val petName: S
 	fun getDamageTotal(level: Int): Double {
 		return ((baseDamage * level / if (level > 1) 1.5 else 1.0) * 100).toInt() / 100.0
 	}
+	
+	fun getPermission(): String = "dungeoncrawler.pets.${name.toLowerCase()}"
 	
 	fun getHead(): ItemStack {
 		val head = ItemStack(Material.SKULL_ITEM, 1, 3)

@@ -22,15 +22,15 @@ fun Player.sendActionBar(string: String) {
 
 fun Player.sendScoreboard(playerData: PlayerData) {
 	val board = Bukkit.getScoreboardManager().newScoreboard
-	val obj = board.registerNewObjective("§6DungeonCrawler","dummy")
-
+	val obj = board.registerNewObjective("§6DungeonCrawler", "dummy")
+	
 	val balance = obj.getScore("§8» §7Balance")
 	balance.score = 15
 	val balanceCounter = board.registerNewTeam("balanceCounter")
 	balanceCounter.addEntry("§0§f")
 	balanceCounter.prefix = "§6${playerData.balance}"
 	obj.getScore("§0§f").score = 14
-
+	
 	val level = obj.getScore("§8» §7Level")
 	level.score = 13
 	val levelCounter = board.registerNewTeam("levelCounter")
@@ -42,7 +42,7 @@ fun Player.sendScoreboard(playerData: PlayerData) {
 	expCounter.prefix = "§6${playerData.exp}"
 	expCounter.suffix = "§6EXP_NEEDED"
 	obj.getScore("§7/").score = 11
-
+	
 	player.scoreboard = board
 }
 
@@ -64,6 +64,18 @@ fun Player.dropGold(amount: Int, location: Location) {
 	entity.customName = entity.itemStack.itemMeta.displayName
 	entity.isCustomNameVisible = true
 	entity.setMetadata("gold", FixedMetadataValue(DungeonCrawler.instance, amount))
+	entity.setMetadata("owner", FixedMetadataValue(DungeonCrawler.instance, uniqueId.toString()))
+	
+	val packet = PacketPlayOutEntityDestroy(entity.entityId)
+	Bukkit.getOnlinePlayers().forEach { player ->
+		if (player.uniqueId != uniqueId) {
+			player.asCraftPlayer().handle.playerConnection.sendPacket(packet)
+		}
+	}
+}
+
+fun Player.dropLocalItem(itemStack: org.bukkit.inventory.ItemStack, location: Location) {
+	val entity = location.world.dropItemNaturally(location, itemStack)
 	entity.setMetadata("owner", FixedMetadataValue(DungeonCrawler.instance, uniqueId.toString()))
 	
 	val packet = PacketPlayOutEntityDestroy(entity.entityId)

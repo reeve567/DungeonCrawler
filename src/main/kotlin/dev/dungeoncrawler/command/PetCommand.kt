@@ -33,7 +33,7 @@ class PetCommand(val playerDataManager: PlayerDataManager) : CommandExecutor {
 					}
 					
 					clickableItem {
-						if (player.hasPermission("dungeoncrawler.pets.${type.name.toLowerCase()}")) {
+						if (player.hasPermission(type.getPermission())) {
 							clickAction {
 								isCancelled = true
 								playerData.pet = Pet(player, type, playerData)

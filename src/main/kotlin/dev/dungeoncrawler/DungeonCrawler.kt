@@ -12,7 +12,10 @@ import dev.dungeoncrawler.handler.GamePortalHandler
 import dev.dungeoncrawler.handler.GeneralHandler
 import dev.dungeoncrawler.handler.JoinLeaveHandler
 import dev.dungeoncrawler.loot.ExitFinder
+import dev.dungeoncrawler.loot.crate.Crate
+import dev.dungeoncrawler.loot.crate.CrateHandler
 import net.milkbowl.vault.chat.Chat
+import net.milkbowl.vault.permission.Permission
 import org.bukkit.Bukkit
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Zombie
@@ -32,6 +35,7 @@ class DungeonCrawler : JavaPlugin() {
 	companion object {
 		lateinit var instance: DungeonCrawler
 		lateinit var chat: Chat
+		lateinit var permission: Permission
 	}
 	
 	override fun onEnable() {
@@ -47,14 +51,18 @@ class DungeonCrawler : JavaPlugin() {
 				JoinLeaveHandler(this, playerDataManager),
 				BankHandler(playerDataManager),
 				GamePortalHandler(playerDataManager, dungeon!!),
-				GeneralHandler(this, playerDataManager)
+				GeneralHandler(this, playerDataManager),
+				CrateHandler()
 		)
-		loadCommands()
 		loadTeams()
 		loadLoot()
 		sendTabAndScoreboard()
 		
 		setupChat()
+		setupPermissions()
+		
+		Crate.values().forEach { it.initialize() }
+		loadCommands()
 		//NonPlayerCharacter(Location(world, 10000.5, 41.0, 10015.5, 0f, 0f))
 	}
 	
@@ -75,9 +83,7 @@ class DungeonCrawler : JavaPlugin() {
 			}
 		}
 		Bukkit.getWorld("world").getEntitiesByClass(ArmorStand::class.java).forEach {
-			if (it.hasMetadata("pet")) {
-				it.remove()
-			}
+			it.remove()
 		}
 		
 		configurationManager.save()
@@ -91,6 +97,7 @@ class DungeonCrawler : JavaPlugin() {
 		SetCommand(playerDataManager)
 		PetCommand(playerDataManager)
 		LootCommand()
+		KeyCommand()
 	}
 	
 	private fun loadLoot() {
@@ -102,6 +109,11 @@ class DungeonCrawler : JavaPlugin() {
 	private fun setupChat() {
 		val rsp = server.servicesManager.getRegistration(Chat::class.java)
 		chat = rsp.provider
+	}
+	
+	private fun setupPermissions() {
+		val rsp = server.servicesManager.getRegistration(Permission::class.java)
+		permission = rsp.provider
 	}
 	
 	private fun sendTabAndScoreboard() {

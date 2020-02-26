@@ -3,11 +3,15 @@ package dev.dungeoncrawler.handler
 import dev.dungeoncrawler.DungeonCrawler
 import dev.dungeoncrawler.data.PlayerDataManager
 import org.bukkit.GameMode
+import org.bukkit.entity.ArmorStand
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockBreakEvent
+import org.bukkit.event.entity.EntityDamageEvent
 import org.bukkit.event.entity.FoodLevelChangeEvent
 import org.bukkit.event.player.AsyncPlayerChatEvent
+import org.bukkit.event.player.PlayerInteractAtEntityEvent
+import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerPickupItemEvent
 import org.bukkit.event.server.ServerListPingEvent
 import java.util.*
@@ -28,15 +32,23 @@ class GeneralHandler(private val dungeonCrawler: DungeonCrawler, private val pla
 	
 	@EventHandler
 	fun onPickup(e: PlayerPickupItemEvent) {
-		if (e.item.hasMetadata("owner") && e.item.hasMetadata("gold")) {
-			e.isCancelled = true
-			val owner = UUID.fromString(e.item.getMetadata("owner").first().asString())
-			val gold = e.item.getMetadata("gold").first().asInt()
-			if (e.player.uniqueId == owner) {
-				e.item.remove()
-				playerDataManager.addBalance(owner, gold)
+		if (e.item.hasMetadata("owner")) {
+			if (e.item.hasMetadata("gold")) {
+				e.isCancelled = true
+				val owner = UUID.fromString(e.item.getMetadata("owner").first().asString())
+				val gold = e.item.getMetadata("gold").first().asInt()
+				if (e.player.uniqueId == owner) {
+					e.item.remove()
+					playerDataManager.addBalance(owner, gold)
+				}
 			}
 		}
+	}
+	
+	@EventHandler
+	fun onInteract(e: EntityDamageEvent) {
+		if (e.entity.hasMetadata("hologram") || e.entity is ArmorStand)
+			e.isCancelled = true
 	}
 	
 	@EventHandler

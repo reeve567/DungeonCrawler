@@ -18,7 +18,7 @@ repositories {
 
 dependencies {
 	implementation(kotlin("stdlib"))
-	implementation(kotlin("reflect"))
+	implementation(kotlin("test-junit"))
 	implementation("com.google.code.gson:gson:2.8.6")
 	compileOnly("org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT")
 	compileOnly("org.bukkit:craftbukkit:1.8.8-R0.1-SNAPSHOT")
