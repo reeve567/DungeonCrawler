@@ -14,9 +14,11 @@ import dev.dungeoncrawler.handler.JoinLeaveHandler
 import dev.dungeoncrawler.loot.ExitFinder
 import dev.dungeoncrawler.loot.crate.Crate
 import dev.dungeoncrawler.loot.crate.CrateHandler
+import dev.dungeoncrawler.npcs.Merchant
 import net.milkbowl.vault.chat.Chat
 import net.milkbowl.vault.permission.Permission
 import org.bukkit.Bukkit
+import org.bukkit.Location
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Zombie
 import org.bukkit.event.Listener
@@ -52,7 +54,9 @@ class DungeonCrawler : JavaPlugin() {
 				BankHandler(playerDataManager),
 				GamePortalHandler(playerDataManager, dungeon!!),
 				GeneralHandler(this, playerDataManager),
-				CrateHandler()
+				CrateHandler(),
+				Merchant(Location(world, 10000.5, 41.5, 9983.7)),
+				Merchant(Location(world, 10000.5, 41.5, 10017.3, 180f, 0f))
 		)
 		loadTeams()
 		loadLoot()
@@ -64,6 +68,8 @@ class DungeonCrawler : JavaPlugin() {
 		Crate.values().forEach { it.initialize() }
 		loadCommands()
 		//NonPlayerCharacter(Location(world, 10000.5, 41.0, 10015.5, 0f, 0f))
+		
+		
 	}
 	
 	private fun register(vararg listener: Listener) {
