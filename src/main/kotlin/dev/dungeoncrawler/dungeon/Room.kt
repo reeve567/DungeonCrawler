@@ -1,23 +1,16 @@
 package dev.dungeoncrawler.dungeon
 
-import dev.dungeoncrawler.Constants
 import dev.dungeoncrawler.extensions.copyTo
-import net.minecraft.server.v1_8_R3.ChunkSection
 import org.bukkit.*
-import org.bukkit.craftbukkit.v1_8_R3.CraftChunk
 import org.bukkit.entity.Player
 
-class Room( val floor: Floor, val x: Int, val z: Int, private val pfbIndex: Int, val isCheckpoint: Boolean = false) {
-	fun create() {
+class Room(val floor: Floor, val x: Int, val z: Int, private val pfbIndex: Int, val isCheckpoint: Boolean = false) {
+	fun create(directionalInformation: PrefabDirectionalInformation) {
 		val prefab: Chunk = if (isCheckpoint) {
-			floor.world.getChunkAt(998, 998)
+			floor.world.getChunkAt(PrefabManager.checkpoint.x, PrefabManager.checkpoint.z)
 		} else {
-			val pfbX = (pfbIndex / Constants.PREFAB_SIZE)
-			val pfbZ = (pfbIndex % Constants.PREFAB_SIZE)
-			val cx = (1000 + pfbX) * 16
-			val cz = (1000 + pfbZ) * 16
-			
-			floor.world.getChunkAt(Location(floor.world, cx.toDouble(), 10.0, cz.toDouble()))
+			val prefab = PrefabManager.getPrefab(directionalInformation)
+			floor.world.getChunkAt(prefab.x, prefab.z)
 		}
 		val destination: Chunk = floor.world.getChunkAt(Location(floor.world, x * 16.0, 10.0, z * 16.0))
 		

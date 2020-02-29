@@ -78,7 +78,6 @@ class Pet(val owner: Player, val type: PetType, var playerData: PlayerData) : Li
 						}
 					}
 					if (closestEntity != null) {
-						print(type.getDamageTotal(level))
 						if (type.baseDamage > 0)
 							closestEntity!!.damage(type.getDamageTotal(level), owner)
 						type.attack(this, closestEntity!!)

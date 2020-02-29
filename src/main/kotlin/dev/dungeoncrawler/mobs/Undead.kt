@@ -11,7 +11,7 @@ import org.bukkit.potion.PotionEffectType
 class Undead(loc: Location, floor: Int) : Mob(loc, "§cUndead", 10.0, EntityType.ZOMBIE, floor) {
 	init {
 		val zombie = entity as Zombie as CraftZombie
-		zombie.handle.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).value = .5
+		zombie.handle.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).value = .3
 		val a = zombie.handle.javaClass.getDeclaredField("a")
 		a.isAccessible = true
 		zombie.handle.attributeMap.a().remove(a.get(zombie.handle))

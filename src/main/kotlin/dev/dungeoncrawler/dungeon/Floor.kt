@@ -78,7 +78,7 @@ class Floor(private val dungeon: Dungeon, private val number: Int, private val o
 						var found = false
 						do {
 							val rand = getRandomSpawn()
-							for (i in 10..14) {
+							for (i in 10..13) {
 								var block = chunk.getBlock(rand.first, i, rand.second)
 								if (block.isSafe() && !found) {
 									block = block.getRelative(0, 1, 0)
@@ -275,6 +275,15 @@ class Floor(private val dungeon: Dungeon, private val number: Int, private val o
 		}
 		
 		for (room in this.rooms) {
+			room.create(PrefabDirectionalInformation(
+					roomExists(room.x, room.z - 1),
+					roomExists(room.x, room.z + 1),
+					roomExists(room.x + 1, room.z),
+					roomExists(room.x - 1, room.z)
+			))
+		}
+		
+		for (room in this.rooms) {
 			room.createDoors()
 		}
 		
@@ -282,7 +291,8 @@ class Floor(private val dungeon: Dungeon, private val number: Int, private val o
 		for (i in -size..size) {
 			for (j in -size..size) {
 				if (getRoom(i + offsetX, j) == null) {
-					world.getChunkAt(998, 999).copyTo(world.getChunkAt(i + offsetX, j))
+					val cover = PrefabManager.covered
+					world.getChunkAt(cover.x, cover.z).copyTo(world.getChunkAt(i + offsetX, j))
 				}
 			}
 		}
@@ -290,9 +300,7 @@ class Floor(private val dungeon: Dungeon, private val number: Int, private val o
 	
 	private fun createRoom(x: Int, z: Int, isCheckpoint: Boolean = false): Room {
 		val pfbIndex: Int = (Math.random() * (Constants.PREFAB_SIZE * Constants.PREFAB_SIZE)).toInt()
-		val room = Room(this, x, z, pfbIndex, isCheckpoint)
-		room.create()
-		return room
+		return Room(this, x, z, pfbIndex, isCheckpoint)
 	}
 	
 	private fun roomExists(x: Int, z: Int): Boolean {
