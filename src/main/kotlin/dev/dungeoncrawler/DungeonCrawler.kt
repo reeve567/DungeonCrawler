@@ -21,7 +21,6 @@ import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.Wolf
-import org.bukkit.entity.Zombie
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -56,8 +55,8 @@ class DungeonCrawler : JavaPlugin() {
 				GamePortalHandler(playerDataManager, dungeon!!),
 				GeneralHandler(this, playerDataManager),
 				CrateHandler(),
-				Merchant(Location(world, 10000.5, 41.5, 9983.7)),
-				Merchant(Location(world, 10000.5, 41.5, 10017.3, 180f, 0f))
+				Merchant(Location(world, 10000.5, 41.5, 9983.7), playerDataManager),
+				Merchant(Location(world, 10000.5, 41.5, 10017.3, 180f, 0f), playerDataManager)
 		)
 		loadTeams()
 		loadLoot()

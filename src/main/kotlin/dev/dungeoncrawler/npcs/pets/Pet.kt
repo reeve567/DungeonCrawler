@@ -22,13 +22,13 @@ import org.bukkit.potion.PotionEffectType
 import java.util.*
 import kotlin.collections.HashMap
 
-class Pet(val owner: Player, val type: PetType, var playerData: PlayerData) : Listener {
+class Pet(private val owner: Player, val type: PetType, var playerData: PlayerData) : Listener {
 	val entity: ArmorStand = Bukkit.getWorld("world").spawnEntity(owner.location, EntityType.ARMOR_STAND) as ArmorStand
 	private val wolf: Wolf = Bukkit.getWorld("world").spawnEntity(owner.location, EntityType.WOLF) as Wolf
 	var summoned = true
 	var level = 1
 	var exp = 0L
-	val tasks = ArrayList<Int>()
+	private val tasks = ArrayList<Int>()
 	
 	companion object {
 		val pets = HashMap<UUID, UUID>()
@@ -115,7 +115,7 @@ class Pet(val owner: Player, val type: PetType, var playerData: PlayerData) : Li
 		tasks.forEach { Bukkit.getScheduler().cancelTask(it) }
 	}
 	
-	fun saveLevels() {
+	private fun saveLevels() {
 		playerData.petLevels.levels[type.id] = level to exp
 	}
 	

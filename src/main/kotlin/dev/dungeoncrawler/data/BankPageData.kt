@@ -9,7 +9,7 @@ import kotlin.math.pow
 class BankPageData(var items: HashMap<Int, ItemStack> = HashMap()) {
 
 	fun openPage(player: Player, playerDataManager: PlayerDataManager, currentPage: Int) {
-		gui {
+		gui("Bank") {
 			var count = 0
 			val playerData = playerDataManager.playerData[player.uniqueId]!!
 			for (item in this@BankPageData.items) {

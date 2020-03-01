@@ -36,6 +36,12 @@ object PrefabManager {
 						Prefab(1002, 1007, PrefabDirectionalInformation(false,true, true, true)),
 						Prefab(1003, 1007, PrefabDirectionalInformation(true, true, false, true)),
 						
+						//corner
+						Prefab(1000, 1009, PrefabDirectionalInformation(true,false,false,true)),
+						Prefab(1001, 1009, PrefabDirectionalInformation(true,false,true,false)),
+						Prefab(1002, 1009, PrefabDirectionalInformation(false,true,true,false)),
+						Prefab(1003, 1009, PrefabDirectionalInformation(false,true,false,true)),
+						
 						// none
 						covered
 				)

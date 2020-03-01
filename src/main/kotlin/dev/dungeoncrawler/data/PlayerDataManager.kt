@@ -11,7 +11,7 @@ import kotlin.collections.HashMap
 class PlayerDataManager {
 
 	var playerData: HashMap<UUID, PlayerData> = HashMap()
-	var marketItems = HashMap<UUID, ArrayList<Triple<Date, Pair<Double, Boolean>, ItemStack>>>()
+	var marketItems = HashMap<UUID, ArrayList<Triple<Date, Pair<Int, Boolean>, ItemStack>>>()
 
 	fun addBalance(uuid: UUID, amount: Int): Boolean {
 		if (playerData.containsKey(uuid)) {

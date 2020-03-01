@@ -21,7 +21,7 @@ class PetCommand(val playerDataManager: PlayerDataManager) : CommandExecutor {
 			return false
 		val playerData = playerDataManager.playerData[player.uniqueId]!!
 		if (playerData.pet == null || (playerData.pet != null && !playerData.pet!!.summoned)) {
-			gui(9) {
+			gui("Pets", 9) {
 				
 				for (i in PetType.values().indices) {
 					val type = PetType.values()[i]

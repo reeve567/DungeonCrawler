@@ -11,8 +11,8 @@ import org.bukkit.event.inventory.InventoryCloseEvent
 import org.bukkit.inventory.Inventory
 import org.bukkit.inventory.ItemStack
 
-class GUI(val size: Int = 54, val items: ArrayList<ClickableItem> = ArrayList()) : Listener {
-	val inv: Inventory = Bukkit.createInventory(null, size, "Inventory")
+class GUI(val title: String, val size: Int = 54, val items: ArrayList<ClickableItem> = ArrayList()) : Listener {
+	val inv: Inventory = Bukkit.createInventory(null, size, title)
 	var onClose: (InventoryCloseEvent.() -> Unit)? = null
 	
 	init {
@@ -68,7 +68,7 @@ class OpenInventoryClickAction(val inventory: Inventory) : ClickAction({
 	this.inventory
 })
 
-fun gui(size: Int = 54, block: GUI.() -> Unit): GUI = GUI(size).apply(block)
+fun gui(title: String, size: Int = 54, block: GUI.() -> Unit): GUI = GUI(title, size).apply(block)
 
 fun GUI.clickableItem(block: ClickableItem.() -> Unit) {
 	val clickableItem = ClickableItem()

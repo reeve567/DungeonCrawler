@@ -1,21 +1,26 @@
 package dev.dungeoncrawler.npcs
 
-import dev.dungeoncrawler.utility.head
+import dev.dungeoncrawler.data.PlayerDataManager
+import dev.dungeoncrawler.utility.*
 import org.bukkit.Color
 import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.entity.ArmorStand
 import org.bukkit.entity.EntityType
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerInteractAtEntityEvent
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.LeatherArmorMeta
 import org.bukkit.util.EulerAngle
+import java.util.*
+import kotlin.Comparator
 import kotlin.math.PI
 
-class Merchant(loc: Location) : Listener {
+class Merchant(loc: Location, val playerDataManager: PlayerDataManager) : Listener {
 	val entity: ArmorStand
+	
 	init {
 		/*
 		Command:
@@ -50,12 +55,69 @@ class Merchant(loc: Location) : Listener {
 	}
 	
 	@EventHandler
-	fun onClick(e : PlayerInteractAtEntityEvent) {
+	fun onClick(e: PlayerInteractAtEntityEvent) {
 		if (e.rightClicked.uniqueId == entity.uniqueId) {
 			e.isCancelled = true
-			
+			market(1, SortType.DATE_ADDED, e.player)
 		}
 		
+	}
+	
+	fun market(page: Int, sortType: SortType, player: Player) {
+		gui("Market") {
+			var temp: List<Triple<Date, Pair<Int, Boolean>, ItemStack>> = emptyList()
+			playerDataManager.marketItems.values.forEach {
+				it.forEach { it1 ->
+					if (it1.second.second)
+						temp.toMutableList().add(it1)
+				}
+			}
+			temp = temp.filter { it.second.second }
+			
+			temp.sortedWith(Comparator { o1, o2 ->
+				when (sortType) {
+					SortType.DATE_ADDED -> {
+						when {
+							o1.first.time > o2.first.time -> 1
+							o1.first.time == o2.first.time -> 0
+							else -> -1
+						}
+					}
+					SortType.ENDING_SOON -> {
+						when {
+							o1.first.time > o2.first.time -> -1
+							o1.first.time == o2.first.time -> 0
+							else -> 1
+						}
+					}
+					SortType.PRICE -> {
+						when {
+							o1.second.first < o2.second.first -> 1
+							o1.second.first == o2.second.first -> 0
+							else -> -1
+						}
+					}
+				}
+			})
+			
+			for (i in 0 until 45) {
+				if (temp.size > i)
+					clickableItem {
+						itemStack = item(temp[i].third) {
+							itemMeta {
+								lore = listOf("§7Price: §6${temp[i].second.first}")
+							}
+						}
+					}
+			}
+			
+		}.open(player)
+	}
+	
+	enum class SortType {
+		DATE_ADDED,
+		ENDING_SOON,
+		PRICE
 	}
 	
 }

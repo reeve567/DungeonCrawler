@@ -128,8 +128,8 @@ class Floor(private val dungeon: Dungeon, private val number: Int, private val o
 									mobList.add(mob.entity.uniqueId)
 									if (mob is Mite) {
 										for (j in 0 until 2) {
-											val mob1 = dungeon.mobHandler.spawnRandomMob(number, block.location.add(0.5, 1.0, 0.5))
-											(mob1!!.entity as Monster).target = e.player
+											val mob1 = dungeon.mobHandler.spawn(Mite(block.location.add(0.5, 1.0, 0.5), number))
+											(mob1.entity as Monster).target = e.player
 											mobs[mob1.entity.uniqueId] = e.player.uniqueId to pair
 											mobList.add(mob1.entity.uniqueId)
 										}
