@@ -20,6 +20,7 @@ import net.milkbowl.vault.permission.Permission
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.entity.ArmorStand
+import org.bukkit.entity.Wolf
 import org.bukkit.entity.Zombie
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
@@ -83,7 +84,7 @@ class DungeonCrawler : JavaPlugin() {
 			player.teleport(Constants.SPAWN_LOCATION)
 		}
 		
-		Bukkit.getWorld("world").getEntitiesByClass(Zombie::class.java).forEach {
+		Bukkit.getWorld("world").getEntitiesByClass(Wolf::class.java).forEach {
 			if (it.hasMetadata("follower")) {
 				it.remove()
 			}

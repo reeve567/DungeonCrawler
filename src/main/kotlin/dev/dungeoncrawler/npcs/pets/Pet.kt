@@ -3,8 +3,12 @@ package dev.dungeoncrawler.npcs.pets
 import dev.dungeoncrawler.DungeonCrawler
 import dev.dungeoncrawler.data.PlayerData
 import dev.dungeoncrawler.extensions.asCraftPlayer
+import net.minecraft.server.v1_8_R3.GenericAttributes
+import net.minecraft.server.v1_8_R3.PathfinderGoalFollowOwner
+import net.minecraft.server.v1_8_R3.PathfinderGoalSelector
 import org.bukkit.Bukkit
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftZombie
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftWolf
 import org.bukkit.entity.*
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
@@ -20,7 +24,7 @@ import kotlin.collections.HashMap
 
 class Pet(val owner: Player, val type: PetType, var playerData: PlayerData) : Listener {
 	val entity: ArmorStand = Bukkit.getWorld("world").spawnEntity(owner.location, EntityType.ARMOR_STAND) as ArmorStand
-	private val zombie: Zombie = Bukkit.getWorld("world").spawnEntity(owner.location, EntityType.ZOMBIE) as Zombie
+	private val wolf: Wolf = Bukkit.getWorld("world").spawnEntity(owner.location, EntityType.WOLF) as Wolf
 	var summoned = true
 	var level = 1
 	var exp = 0L
@@ -52,8 +56,7 @@ class Pet(val owner: Player, val type: PetType, var playerData: PlayerData) : Li
 		
 		tasks.add(Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonCrawler.instance, {
 			if (summoned) {
-				zombie.target = owner.asCraftPlayer()
-				if (zombie.location.distance(owner.location) > 100) {
+				if (wolf.location.distance(owner.location) > 100) {
 					// too far
 					owner.sendMessage("§6You pet got too far away and returned.")
 					remove()
@@ -84,7 +87,7 @@ class Pet(val owner: Player, val type: PetType, var playerData: PlayerData) : Li
 					}
 				}
 			} else {
-				if (!zombie.isDead) {
+				if (!wolf.isDead) {
 					remove()
 				}
 			}
@@ -93,7 +96,7 @@ class Pet(val owner: Player, val type: PetType, var playerData: PlayerData) : Li
 		tasks.add(Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonCrawler.instance, {
 			if (summoned) {
 				levelUp()
-				entity.teleport(zombie.location.setDirection(owner.location.toVector().subtract(entity.location.toVector())).add(0.0, 2.0, 0.0), PlayerTeleportEvent.TeleportCause.PLUGIN)
+				entity.teleport(wolf.location.setDirection(owner.location.toVector().subtract(entity.location.toVector())).add(0.0, 2.0, 0.0), PlayerTeleportEvent.TeleportCause.PLUGIN)
 			}
 		}, 2L, 2L))
 	}
@@ -103,9 +106,9 @@ class Pet(val owner: Player, val type: PetType, var playerData: PlayerData) : Li
 		saveLevels()
 		
 		pets.remove(entity.uniqueId)
-		followers.remove(zombie.uniqueId)
+		followers.remove(wolf.uniqueId)
 		
-		zombie.remove()
+		wolf.remove()
 		entity.remove()
 		summoned = false
 		
@@ -146,11 +149,18 @@ class Pet(val owner: Player, val type: PetType, var playerData: PlayerData) : Li
 	}
 	
 	private fun setFollowerEntity() {
-		zombie.isBaby = true
-		(zombie as CraftZombie).handle.b(true)
-		zombie.addPotionEffect(PotionEffect(PotionEffectType.INVISIBILITY, Int.MAX_VALUE, 1, false, false))
-		zombie.setMetadata("follower", FixedMetadataValue(DungeonCrawler.instance, owner.uniqueId.toString()))
-		pets[zombie.uniqueId] = owner.uniqueId
+		wolf.isTamed = true
+		wolf.owner = owner
+		val goalSelector = PathfinderGoalSelector((owner.world as CraftWorld).handle.methodProfiler)
+		goalSelector.a(5, PathfinderGoalFollowOwner((wolf as CraftWolf).handle, 1.0, 2f, 2f))
+		wolf.handle.goalSelector = goalSelector
+		
+		wolf.handle.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).value = .45
+		wolf.handle.b(true)
+		
+		wolf.addPotionEffect(PotionEffect(PotionEffectType.INVISIBILITY, Int.MAX_VALUE, 1, false, false))
+		wolf.setMetadata("follower", FixedMetadataValue(DungeonCrawler.instance, owner.uniqueId.toString()))
+		pets[wolf.uniqueId] = owner.uniqueId
 	}
 	
 	@EventHandler(priority = EventPriority.HIGH)
