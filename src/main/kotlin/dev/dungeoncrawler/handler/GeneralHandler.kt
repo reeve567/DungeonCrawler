@@ -18,10 +18,6 @@ import java.util.*
 
 
 class GeneralHandler(private val dungeonCrawler: DungeonCrawler, private val playerDataManager: PlayerDataManager) : Listener {
-	@EventHandler
-	fun onFoodChange(e: FoodLevelChangeEvent) {
-		e.foodLevel = 20
-	}
 	
 	@EventHandler
 	fun onBreak(e: BlockBreakEvent) {

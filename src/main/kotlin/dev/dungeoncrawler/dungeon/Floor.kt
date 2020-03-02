@@ -74,7 +74,7 @@ class Floor(private val dungeon: Dungeon, private val number: Int, private val o
             if (room != null) {
                 val pair = Pair(e.to.chunk.x, e.to.chunk.z)
                 val chunk = room.getChunk()
-                val multiplier = 0.9 + (rooms.size / 100.0)
+                val multiplier = 0.9 + (visited[e.player.uniqueId]!!.size / 100.0)
                 fun addChest() {
                     if (Random.nextInt(IntRange(1, 100)) <= Constants.CHEST_SPAWN_CHANCE) {
                         var found = false
@@ -105,7 +105,6 @@ class Floor(private val dungeon: Dungeon, private val number: Int, private val o
                                 }
                             }
                         } while (!found)
-
                     }
                 }
 

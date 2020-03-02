@@ -7,10 +7,7 @@ import dev.dungeoncrawler.dungeon.Dungeon
 import dev.dungeoncrawler.dungeon.SetCommand
 import dev.dungeoncrawler.extensions.sendHeaderAndFooter
 import dev.dungeoncrawler.extensions.updateTeam
-import dev.dungeoncrawler.handler.BankHandler
-import dev.dungeoncrawler.handler.GamePortalHandler
-import dev.dungeoncrawler.handler.GeneralHandler
-import dev.dungeoncrawler.handler.JoinLeaveHandler
+import dev.dungeoncrawler.handler.*
 import dev.dungeoncrawler.loot.ExitFinder
 import dev.dungeoncrawler.loot.crate.Crate
 import dev.dungeoncrawler.loot.crate.CrateHandler
@@ -54,6 +51,7 @@ class DungeonCrawler : JavaPlugin() {
 				BankHandler(playerDataManager),
 				GamePortalHandler(playerDataManager, dungeon!!),
 				GeneralHandler(this, playerDataManager),
+				FoodHandler(this),
 				CrateHandler(),
 				Merchant(Location(world, 10000.5, 41.5, 9983.7), playerDataManager),
 				Merchant(Location(world, 10000.5, 41.5, 10017.3, 180f, 0f), playerDataManager)
